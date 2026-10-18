@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "activity-monitor-personal"
+version = "0.1.0"
+description = "A personal activity tracking foundation for Windows and Linux."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "Murilo Fidelis" }]
+dependencies = []
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX :: Linux",
+  "Topic :: Utilities",
+]
+
+[project.scripts]
+activity-monitor = "activity_monitor.cli:main"
+
+[project.urls]
+Repository = "https://github.com/muhh190106/app-monitoramento-linux"
+Issues = "https://github.com/muhh190106/app-monitoramento-linux/issues"
+Roadmap = "https://github.com/muhh190106/app-monitoramento-linux/blob/main/docs/roadmap.md"
+
+[tool.setuptools.packages.find]
+include = ["activity_monitor*", "monitoramento*"]
