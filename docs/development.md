@@ -46,11 +46,11 @@ The repository contains a reproducible setup command:
 bash scripts/setup-cloud.sh
 ```
 
-It creates `.venv`, runs unit tests, and executes the synthetic demo. It does not need credentials, external services, or desktop permissions. New cloud environments can use this command as their installation step and the test/demo commands as startup checks.
+It creates `.venv`, installs the desktop extra, runs headless unit/chart tests, and executes the synthetic CLI demo. Tk window checks require a graphical display and are handled separately in CI. It does not need credentials, external services, or desktop permissions. New cloud environments can use this command as their installation step and the test/demo commands as startup checks.
 
 Existing environments using `python -m monitoramento --demo` remain supported by the compatibility package. The English demo output uses `Browser` as its sample application name.
 
-The product name is STime NOW. Technical package and command names remain unchanged. Product localization in English and Portuguese, pandas/matplotlib charts, and the installed device agent are planned requirements; the synthetic CLI does not implement these features yet.
+The product name is STime NOW. Technical package and command names remain unchanged. Desktop mode now includes English/Portuguese messages and pandas/matplotlib charts with synthetic data. The installed monitoring agent is still planned.
 
 ## Repository layout
 
@@ -66,3 +66,15 @@ docs/                   Architecture, roadmap, and development guide
 ## Data hygiene
 
 Keep databases, exports, logs, and credentials outside version control. The ignore rules provide a starting point; inspect `git diff --cached` before committing. Use synthetic examples in issues, tests, documentation, and cloud tasks.
+
+## Desktop development
+
+Install optional dependencies with `python -m pip install -e '.[desktop]'` and launch with `python -m activity_monitor --desktop`. Add `--language pt-BR` for Portuguese. The existing JSON demo stays dependency-free.
+
+`reporting.py` contains typed intervals and pandas aggregation; `charts.py` renders matplotlib figures; `desktop.py` contains Tkinter widgets; `i18n.py` contains interface translations. Synthetic intervals are generated once at launch for the local current date and preceding 29 days. Filters never regenerate the dataset.
+
+Reporting currently accepts naive local wall-clock datetimes from the synthetic provider, rejects overlapping intervals, clips period boundaries, and splits intervals at chart bucket boundaries. It does not yet define multi-device or daylight-saving behavior for real collection.
+
+Run all headless tests with the desktop extra installed. For Tk smoke tests, set `STIME_DESKTOP_TESTS=1` in a graphical session. On headless Linux use `xvfb-run -a env STIME_DESKTOP_TESTS=1 python -m unittest discover -s tests -v`. In Windows PowerShell, set `$env:STIME_DESKTOP_TESTS = '1'` before running the same unittest command. CI exercises both modes. Core-only installations skip optional chart/report tests.
+
+The desktop provider is in memory. It does not request monitoring permissions, inspect running apps, save activity, or run at startup. Date filters show historical sample data; dates outside the sample range demonstrate the empty state.

@@ -6,21 +6,11 @@
 
 Desktop screen-time management for personal focus, families, and teams.
 
-STime NOW is being developed for Windows and Linux to help people understand application usage, manage distractions, and share relevant insights through role-specific dashboards.
+The first desktop increment provides a visitor dashboard with active/idle totals, usage charts, application filters, date ranges, and an English/Portuguese interface. It runs with **sample activity only**. Live monitoring, app suspension, accounts, and family/team workflows are upcoming increments.
 
-**In development.** The repository currently includes an activity aggregation core and a synthetic CLI demo. Desktop monitoring, app suspension, accounts, and dashboards are planned.
+## Start the desktop app
 
-## Product scope
-
-- **Personal focus:** explore usage charts and suspend selected apps during focus sessions.
-- **Families:** connect children through a family code, set screen-time limits, and review temporary access requests.
-- **Teams:** organize members, categorize applications, and review usage summaries and daily reports.
-
-The planned interface supports **English and Portuguese**, with charts powered by pandas and matplotlib. See the [product specification](docs/product.md) for roles and requirements, and the [roadmap](docs/roadmap.md) for delivery priorities.
-
-## Run the demo
-
-Requires Git and Python 3.11+. The current demo has no third-party runtime dependencies and uses synthetic data only.
+Requires Git, Python 3.11+, and Tk. The desktop extra installs pandas and matplotlib.
 
 ```bash
 git clone https://github.com/muhh190106/app-monitoramento-linux.git
@@ -31,24 +21,34 @@ cd app-monitoramento-linux
 
 ```powershell
 python -m venv .venv
-.\.venv\Scripts\python.exe -m activity_monitor --demo
+.\.venv\Scripts\python.exe -m pip install -e ".[desktop]"
+.\.venv\Scripts\python.exe -m activity_monitor --desktop
 ```
+
+After setup, double-click `start-windows.cmd` to reopen the dashboard.
 
 **Linux · Bash**
 
 ```bash
 python3 -m venv .venv
-.venv/bin/python -m activity_monitor --demo
+.venv/bin/python -m pip install -e '.[desktop]'
+.venv/bin/python -m activity_monitor --desktop
 ```
 
-The demo reports 120 active seconds for Editor and 60 for Browser. It does not collect desktop activity.
+Install your distribution's Tk package if `tkinter` is unavailable. Desktop mode requires a graphical session. Add `--language pt-BR` to start in Portuguese, or switch languages from the dashboard.
+
+The lightweight CLI demo remains available through `python -m activity_monitor --demo` without the desktop extra.
+
+## Product direction
+
+- **Personal focus:** usage insights and app suspension during focus sessions.
+- **Families:** family codes, screen-time limits, and temporary access requests.
+- **Teams:** membership, application categories, and daily reports.
+
+The [increment plan](docs/roadmap.md) defines the next steps and acceptance criteria. See the [product specification](docs/product.md) for the full planned scope.
 
 ## Documentation
 
-[Product specification](docs/product.md) · [Architecture](docs/architecture.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
-
-The Python package remains `activity_monitor`, and the installable command is `activity-monitor`. Setup, installation, and test commands are documented in the development guide.
-
-## Acknowledgments
+[Architecture](docs/architecture.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 Inspired by [ActivityWatch](https://github.com/ActivityWatch/activitywatch). STime NOW is an independent project; no ActivityWatch source code is included.

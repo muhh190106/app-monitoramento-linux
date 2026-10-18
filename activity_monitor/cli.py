@@ -14,10 +14,29 @@ def main(argv=None):
         epilog="Early development: desktop activity collection is not available yet.",
     )
     parser.add_argument("--version", action="version", version=f"%(prog)s {__version__}")
-    parser.add_argument(
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
         "--demo", action="store_true", help="Summarize synthetic events without collecting activity"
     )
+    mode.add_argument("--desktop", action="store_true", help="Open the desktop dashboard with sample activity")
+    parser.add_argument("--language", choices=("en", "pt-BR"), default="en", help="Desktop interface language")
     args = parser.parse_args(argv)
+    if args.desktop:
+        try:
+            from .desktop import launch
+        except ImportError as error:
+            parser.error(
+                "Desktop support requires tkinter, pandas, and matplotlib. "
+                "Install with: python -m pip install -e '.[desktop]'. "
+                "On Linux, install your distribution's Tk package too. "
+                f"Missing dependency: {error.name}"
+            )
+        import tkinter as tk
+        try:
+            launch(args.language)
+        except tk.TclError:
+            parser.exit(2, "Unable to open the desktop interface. Check that a graphical display and Tk are available.\n")
+        return
     if not args.demo:
         parser.print_help()
         return
