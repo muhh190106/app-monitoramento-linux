@@ -1,18 +1,18 @@
-name: Feature request
-description: Propose an improvement to Activity Monitor.
+name: Sugerir melhoria
+description: Proponha uma melhoria para o STime NOW, em português ou inglês.
 title: "[Feature]: "
 body:
   - type: textarea
     id: problem
     attributes:
-      label: Problem to solve
-      description: Who is affected, and what are they trying to accomplish?
+      label: Problema a resolver
+      description: Quem é afetado e o que essa pessoa precisa fazer?
     validations:
       required: true
   - type: textarea
     id: proposal
     attributes:
-      label: Proposed solution
-      description: Explain the behavior, alternatives, and any privacy implications.
+      label: Solução proposta
+      description: Explique o comportamento, as alternativas e os impactos na privacidade.
     validations:
       required: true

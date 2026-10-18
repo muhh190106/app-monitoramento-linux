@@ -1,30 +1,40 @@
-# Contributing to STime NOW
+# Contribuir com o STime NOW
 
-Thanks for helping improve STime NOW. The project is in early development; focused changes are easier to review and build on.
+O projeto está no início do desenvolvimento. Prefira alterações com objetivo claro, fáceis de revisar e de integrar ao trabalho da equipe.
 
-## Before you start
+## Antes de começar
 
-Read the [product specification](docs/product.md), [roadmap](docs/roadmap.md), and [architecture](docs/architecture.md). Open an issue to discuss a substantial feature or a new dependency before implementation. Keep public discussions and contributions in English so contributors from different countries can participate.
+Leia os [requisitos](docs/product.md), o [planejamento](docs/roadmap.md) e a [arquitetura](docs/architecture.md). Abra uma issue para discutir funcionalidades maiores ou novas dependências antes de implementá-las. Discussões e descrições de pull requests podem ser feitas em português ou inglês.
 
-## Development workflow
+## Organização dos idiomas
 
-1. Fork the repository if you do not have write access, then clone your fork.
-2. Create a virtual environment using the [development guide](docs/development.md).
-3. Create a branch, for example `git switch -c codex/improve-summary`.
-4. Keep the change focused and add tests for behavior changes.
-5. Run `python -m unittest discover -s tests -v` and `python -m activity_monitor --demo` with your virtual environment's Python.
-6. Open a pull request describing the problem, the change, and how you verified it.
+- Documentação principal, requisitos, arquitetura, DER e planejamento: português brasileiro.
+- Apresentação internacional: [README em inglês](README.en.md), alinhado ao [README principal](README.md).
+- Código, identificadores, tabelas, campos, endpoints, erros técnicos, saída do terminal e mensagens de commit: inglês.
+- Contrato OpenAPI legível por ferramentas: inglês; explicações da API: português.
+- Interface: português brasileiro e inglês, com as mesmas funcionalidades nos dois idiomas.
 
-Use clear English names, messages, and documentation. Preserve existing work and avoid unrelated rewrites. Do not rewrite shared Git history.
+Ao alterar instalação, funcionalidades ou limitações, atualize os dois READMEs. Não traduza comandos, nomes de pacotes ou chaves dos exemplos.
 
-## Test data and privacy
+## Fluxo de desenvolvimento
 
-Use synthetic events only. Never upload activity exports, real window titles, browsing history, credentials, or personal databases. Redact sensitive information from issue reports and screenshots.
+1. Faça um fork se não tiver acesso de escrita e clone o repositório correspondente.
+2. Crie um ambiente virtual seguindo o [guia de desenvolvimento](docs/development.md).
+3. Crie uma branch, por exemplo `git switch -c codex/improve-summary`.
+4. Mantenha o foco da alteração e acrescente testes quando mudar comportamentos.
+5. Execute `python -m unittest discover -s tests -v` e `python -m activity_monitor --demo` com o Python do ambiente virtual.
+6. Abra um pull request explicando o problema, a alteração e como ela foi verificada.
 
-## Reporting a bug
+Preserve o trabalho existente, evite mudanças sem relação com a tarefa e não reescreva o histórico Git compartilhado.
 
-Include the operating system, Python version, command, expected result, actual result, and a minimal synthetic example. Use the bug report template. Security reports belong in the private process described in [SECURITY.md](SECURITY.md).
+## Dados de teste e privacidade
 
-## Working together
+Use apenas eventos fictícios. Nunca envie exportações de atividade, títulos reais de janelas, histórico de navegação, credenciais ou bancos pessoais. Remova informações sensíveis de relatos e capturas de tela.
 
-Be respectful, give actionable feedback, and explain technical tradeoffs. Critique the work rather than the person. Keep discussions relevant to the project and its users.
+## Relatar um problema
+
+Informe sistema operacional, versão do Python, comando utilizado, resultado esperado, resultado obtido e um exemplo mínimo com dados fictícios. Use o formulário de relato de problema. Vulnerabilidades devem seguir o processo privado de [SECURITY.md](SECURITY.md).
+
+## Trabalho em equipe
+
+Mantenha o respeito, dê sugestões que possam ser colocadas em prática e explique as decisões técnicas. Avalie o trabalho, não a pessoa, e mantenha as discussões relacionadas ao projeto.

@@ -4,7 +4,9 @@ STime NOW is an early-stage desktop screen-time project for individuals, familie
 
 - Read the applicable instructions, verify the Git root, and inspect `git status` before editing.
 - Preserve user changes. Do not reset, clean, or force push without an explicit request.
-- Keep documentation, code, errors, CLI output, and commit messages in English.
+- Keep primary documentation, requirements, architecture, data-model explanations, planning, and contribution templates in Brazilian Portuguese. Maintain README.en.md as the English overview and keep it aligned with README.md.
+- Keep code, identifiers, schema/table/field names, endpoints, technical errors, CLI output, and commit messages in English. The machine-readable OpenAPI contract remains in English.
+- Preserve English and Brazilian Portuguese interface translations. Discussions and pull request descriptions may use Portuguese or English.
 - Run tests with `python -m unittest discover -s tests -v`.
 - Run the synthetic demo with `python -m activity_monitor --demo`.
 - In a cloud/Linux environment, use `.venv/bin/python`; on Windows, use `.venv\Scripts\python.exe`.

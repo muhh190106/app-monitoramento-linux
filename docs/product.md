@@ -1,80 +1,80 @@
-# Product specification
+# Especificação do produto
 
-STime NOW is a desktop screen-time management application for personal use, families, and work teams. It combines usage insights with focus sessions and role-specific access to activity data.
+STime NOW é um aplicativo desktop de gestão do tempo de tela para uso pessoal, famílias e equipes de trabalho. Combina acompanhamento de uso, sessões de foco e acesso aos dados conforme o perfil.
 
-This specification summarizes the Sprint 2 requirements. Story identifiers are retained for traceability. The requirements below describe the full planned product. The current increment implements a visitor desktop dashboard, English/Portuguese messages, and pandas/matplotlib charts using synthetic data. Live monitoring, suspension, persistence, accounts, and family/team workflows remain planned.
+Esta especificação resume os requisitos da Sprint 2 e mantém os identificadores das histórias para rastreabilidade. O escopo abaixo descreve o produto planejado. O incremento atual implementa o painel de visitante, mensagens em português/inglês e gráficos com pandas/matplotlib sobre dados fictícios. Monitoramento real, suspensão, persistência, contas e fluxos de famílias/equipes ainda estão planejados.
 
-## User roles
+## Perfis de usuário
 
-| Role | Access | Intended capabilities |
+| Perfil | Acesso | Funcionalidades previstas |
 | --- | --- | --- |
-| Visitor (`V`) | No account required | View personal usage and configure focus sessions. |
-| Parent or guardian (`PR`) | Username and password | Manage a family, set child limits, review usage, and decide access requests. |
-| Child (`F`) | Join a family using a code; no username/password login | View personal usage, remaining time, restrictions, and achievements; request temporary access. |
-| Manager (`GR`) | Username and password | Manage a team, inspect individual and aggregate usage, classify apps, and review reports. |
-| Team member (`CB`) | Authenticated account and team code | View personal usage and provide context for activity included in daily reports. |
+| Visitante (`V`) | Sem conta | Consultar o próprio uso e configurar sessões de foco. |
+| Pai, mãe ou responsável (`PR`) | Usuário e senha | Administrar a família, definir limites dos filhos, consultar uso e decidir pedidos de acesso. |
+| Filho (`F`) | Ingresso por código familiar; sem login com usuário/senha | Consultar uso próprio, tempo restante, restrições e conquistas; pedir acesso temporário. |
+| Gestor (`GR`) | Usuário e senha | Administrar equipe, consultar uso individual/agregado, classificar aplicativos e acompanhar relatórios. |
+| Colaborador (`CB`) | Conta autenticada e código de equipe | Consultar uso próprio e justificar atividades incluídas nos relatórios diários. |
 
-A person with multiple roles must be able to select the appropriate profile. Team members must only see their own activity; manager access is scoped to the managed team, and guardian access to the linked family. A child cannot change the guardian's limits or restriction policies.
+Quem tiver mais de um perfil deve poder selecionar o perfil autorizado. Colaboradores acessam apenas seus próprios dados; gestores, a equipe administrada; responsáveis, os filhos vinculados. Filhos não podem alterar limites ou políticas do responsável.
 
-## Functional requirements
+## Requisitos funcionais
 
-### Personal usage and focus
+### Uso pessoal e foco
 
-`V.01` provides interactive usage charts, application icons and totals, and period filters such as day, week, and month. Missing data and missing monitoring permission must have clear states. A usage chart is generated at the end of each session (`RNG-4`).
+`V.01` oferece gráficos interativos, ícones e totais por aplicativo e filtros como dia, semana e mês. Ausência de dados e falta de permissão de monitoramento devem ter mensagens claras. Um gráfico de uso é gerado ao final de cada sessão (`RNG-4`).
 
-`V.02` lets a user choose applications and a focus period. After the necessary permission and confirmation, selected applications are suspended or restricted for that period and restored automatically when it ends. Denied permission and an empty selection must be handled explicitly.
+`V.02` permite escolher aplicativos e uma duração de foco. Após obter permissão e confirmação, os aplicativos selecionados são suspensos ou restringidos pelo período e restaurados automaticamente ao término. Permissão negada e seleção vazia devem ser tratadas explicitamente.
 
-### Accounts and access
+### Contas e acesso
 
-`U.01` collects full name, email, username, password, and the parent/guardian or manager profile. Email and username must be unique; successful registration leads to login. `U.02` authenticates credentials, handles invalid attempts, and routes the user to the selected authorized profile.
+`U.01` solicita nome completo, e-mail, usuário, senha e perfil de responsável ou gestor. E-mail e usuário devem ser únicos; o cadastro bem-sucedido leva ao login. `U.02` autentica credenciais, trata tentativas inválidas e direciona ao perfil autorizado selecionado.
 
-### Families
+### Famílias
 
-- `PR.01` / `F.01`: generate and rotate a unique family code; validate it before linking a child. A child can belong to only one family at a time. The guardian sees updated membership immediately and confirms member removal. Invalid, expired, or revoked codes must not create a link.
-- `PR.02`: define per-child daily usage limits, selected apps to limit or suspend, and optional schedules. Apply restrictions when the limit is reached. Record the actor and timestamp of every policy change.
-- `PR.03` / `F.02`: show the appropriate usage dashboard, period filters, active rules, remaining daily time, and a warning as the limit approaches. Child access is read-only for policies.
-- `F.03`: allow one pending temporary access request per restricted app, with a reason and requested duration. The app stays blocked pending a decision. Approval grants temporary access; expiry restores the restriction. Approved exception time does not consume the global daily allowance.
-- `F.04`: show read-only streaks, completed focus hours, and comparisons between configured limits and actual usage. Children cannot manually edit or reset these metrics.
+- `PR.01` / `F.01`: gerar e renovar um código familiar único; validá-lo antes de vincular um filho. Cada filho pertence a uma única família por vez. O responsável vê a atualização dos membros imediatamente e confirma a remoção. Códigos inválidos, expirados ou revogados não criam vínculo.
+- `PR.02`: definir limites diários por filho, aplicativos a limitar/suspender e horários opcionais. Aplicar restrições quando o limite for alcançado. Registrar autor e horário de cada alteração de política.
+- `PR.03` / `F.02`: apresentar o painel do perfil, filtros por período, regras ativas, tempo diário restante e aviso quando o limite estiver próximo. Filhos apenas consultam as políticas.
+- `F.03`: permitir um pedido pendente por aplicativo restrito, com motivo e duração solicitada. O aplicativo continua bloqueado até a decisão. A aprovação libera acesso temporário; o término restaura a restrição. O tempo da exceção aprovada não consome o limite diário global.
+- `F.04`: mostrar sequências de dias, horas de foco concluídas e comparação entre limites e uso real. Filhos não podem editar ou zerar essas métricas.
 
-### Teams
+### Equipes
 
-- `GR.01` / `CB.01`: create named teams and rotatable join codes. An authenticated member can join only one active team and must appear immediately in the manager's member list. Invalid codes are rejected. Member removal and voluntary departure require confirmation.
-- `GR.02` / `CB.02`: managers can switch between individual and team totals and filter periods. Members see their own application usage and manager-defined categories. Empty results have a clear explanation.
-- `GR.04`: provide editable default categories such as Productive, Communication, and Leisure/Distraction. Apply the current classification across team charts and reports, including historical views as described in `UC-11`.
-- `GR.05`: create subgroups or projects, associate team members, and filter dashboards by subgroup. Deleting a subgroup preserves team membership and individual usage history.
-- `GR.03` / `CB.03`: make daily reports available to the manager at the end of a member's shift or session, with active time, category breakdowns, and submitted explanations. Explanations can be submitted before report closure and become immutable once confirmed. Reports support date and member filters.
+- `GR.01` / `CB.01`: criar equipes nomeadas e códigos renováveis. Um colaborador autenticado pode participar de apenas uma equipe ativa e deve aparecer imediatamente na lista do gestor. Códigos inválidos são rejeitados. Remoção e saída voluntária exigem confirmação.
+- `GR.02` / `CB.02`: permitir ao gestor alternar entre totais individuais e da equipe e filtrar períodos. Colaboradores consultam seu uso e as categorias definidas pelo gestor. Resultados vazios têm explicação clara.
+- `GR.04`: fornecer categorias padrão editáveis, como Produtivo, Comunicação e Lazer/Distração. Aplicar a classificação atual aos gráficos e relatórios, inclusive históricos, conforme `UC-11`.
+- `GR.05`: criar subgrupos ou projetos, associar colaboradores e filtrar painéis por subgrupo. Excluir um subgrupo preserva a participação na equipe e o histórico individual.
+- `GR.03` / `CB.03`: disponibilizar relatórios diários ao gestor ao final do turno ou sessão, com tempo ativo, distribuição por categoria e justificativas enviadas. Justificativas podem ser enviadas antes do fechamento e tornam-se imutáveis após confirmação. Relatórios têm filtros por data e colaborador.
 
-## Quality and platform requirements
+## Requisitos de qualidade e plataforma
 
-| ID | Requirement |
+| ID | Requisito |
 | --- | --- |
-| `RNF-1` | Desktop application. Windows and Linux are the repository's target platforms. |
-| `RNF-2` | Python charts using pandas and matplotlib. These dependencies are used by the optional desktop dashboard; the lightweight CLI demo does not require them. |
-| `RNF-3` | HTTPS for network communication. |
-| `RNF-4` | Layouts that adapt to different screen sizes. |
-| `RNF-5` | Accessibility guided by WCAG; the target version and conformance level remain to be defined. |
-| `RNF-6` | At least English and Portuguese in the product interface. |
-| `RNF-7` | An installed device agent for monitoring and app suspension, integrated with the application backend. |
+| `RNF-1` | Aplicação desktop. Windows e Linux são as plataformas-alvo do repositório. |
+| `RNF-2` | Gráficos Python com pandas e matplotlib. Essas dependências pertencem ao painel opcional; a demonstração simples pelo terminal não precisa delas. |
+| `RNF-3` | HTTPS na comunicação de rede. |
+| `RNF-4` | Layout adaptável a diferentes tamanhos de tela. |
+| `RNF-5` | Acessibilidade orientada pelas WCAG; versão e nível de conformidade ainda precisam ser definidos. |
+| `RNF-6` | Interface em pelo menos português e inglês. |
+| `RNF-7` | Agente instalado para monitoramento e suspensão de aplicativos, integrado ao backend. |
 
-`RNG-1` requires role-specific screens and authorization. `RNG-2` requires friendly handling of registration conflicts, denied access, and technical failures, with diagnostic logging. Logs must not expose passwords or raw private activity. `RNG-3` requires example database data for implemented stories; development fixtures must remain synthetic.
+`RNG-1` exige telas e autorização por perfil. `RNG-2` exige tratamento amigável de conflitos de cadastro, acesso negado e falhas técnicas, com registros de diagnóstico. Esses registros não podem expor senhas ou atividade privada bruta. `RNG-3` exige dados de exemplo no banco para as histórias implementadas; os exemplos de desenvolvimento devem ser fictícios.
 
-## Delivery priorities
+## Prioridades de entrega
 
-| Priority | Stories |
+| Prioridade | Histórias |
 | --- | --- |
-| High | `V.01`, `V.02`, `U.01`, `U.02`, `PR.01`, `F.01`, `PR.02` |
-| Medium | `PR.03`, `F.02`, `F.03`, `GR.01`, `CB.01`, `GR.02`, `GR.04`, `CB.02`, `CB.03` |
-| Low | `GR.03`, `F.04` |
+| Alta | `V.01`, `V.02`, `U.01`, `U.02`, `PR.01`, `F.01`, `PR.02` |
+| Média | `PR.03`, `F.02`, `F.03`, `GR.01`, `CB.01`, `GR.02`, `GR.04`, `CB.02`, `CB.03` |
+| Baixa | `GR.03`, `F.04` |
 
-The source priority table groups subgroup organization under `GR.04`; the detailed story is `GR.05`. The roadmap keeps subgroup work beside team categorization, with its standalone priority awaiting confirmation. Member explanations (`CB.03`) depend on a report lifecycle even though automatic report delivery (`GR.03`) has lower priority.
+A tabela original agrupa subgrupos em `GR.04`, mas a história detalhada é `GR.05`. O planejamento mantém subgrupos junto da categorização; a prioridade própria ainda precisa de confirmação. Justificativas (`CB.03`) dependem do ciclo de relatórios, mesmo que a entrega automática (`GR.03`) tenha prioridade menor.
 
-## Decisions to resolve before implementation
+## Decisões pendentes antes da implementação
 
-- **Team member enrollment:** members must authenticate, but the registration story currently offers only guardian and manager profiles. Define invitation and account creation for members.
-- **Account and device identity:** define multi-role account assignment and persistent identification for children who join without credentials, including unlinking and device replacement.
-- **Policy enforcement:** specify supported Windows/Linux sessions, required permissions, safe suspension/restoration behavior, and how family policies coexist with personal focus sessions.
-- **Service boundaries:** select the desktop UI toolkit, backend deployment, storage, device trust model, and data-sharing rules. The earlier SQLite suggestion remains a proposal, not a requirement from Sprint 2.
+- **Cadastro de colaboradores:** eles devem se autenticar, mas a história de cadastro só oferece responsável e gestor. Definir convite e criação de conta.
+- **Identidade de contas e dispositivos:** definir atribuição de múltiplos perfis e identificação persistente de filhos sem credenciais, incluindo desvinculação e troca de dispositivo.
+- **Aplicação das restrições:** especificar sessões Windows/Linux suportadas, permissões, suspensão/restauração segura e convivência entre políticas familiares e foco pessoal.
+- **Limites dos serviços:** a primeira integração escolhe Tkinter, backend local, SQLite e tokens locais com escopo; veja [API](api.md) e [modelo de dados](data-model.md). São decisões de implementação, não exigências da Sprint 2. Hospedagem, confiança entre usuários e compartilhamento familiar/de equipe continuam pendentes.
 
-## Use-case map
+## Mapa de casos de uso
 
-`UC-01` usage dashboard; `UC-02` focus suspension; `UC-03` registration; `UC-04` login; `UC-05` family management; `UC-06` limits and policies; `UC-07` child usage; `UC-08` family enrollment; `UC-09` team management; `UC-10` team insights; `UC-11` categories and subgroups; `UC-12` daily reports; `UC-13` temporary access; `UC-14` team enrollment.
+`UC-01` painel de uso; `UC-02` suspensão para foco; `UC-03` cadastro; `UC-04` login; `UC-05` gestão familiar; `UC-06` limites e políticas; `UC-07` uso do filho; `UC-08` ingresso familiar; `UC-09` gestão de equipe; `UC-10` visão da equipe; `UC-11` categorias e subgrupos; `UC-12` relatórios diários; `UC-13` acesso temporário; `UC-14` ingresso na equipe.

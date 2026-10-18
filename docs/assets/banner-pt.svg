@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-labelledby="title desc">
+  <title id="title">STime NOW</title>
+  <desc id="desc">Tempo de tela, foco e hábitos. Um projeto desktop para pessoas, famílias e equipes.</desc>
+  <defs>
+    <linearGradient id="bg" x2="1" y2="1"><stop stop-color="#0b1220"/><stop offset="1" stop-color="#152b3c"/></linearGradient>
+    <linearGradient id="bars" x2="0" y2="1"><stop stop-color="#5eead4"/><stop offset="1" stop-color="#22d3ee"/></linearGradient>
+  </defs>
+  <rect width="1200" height="360" rx="24" fill="url(#bg)"/>
+  <text x="58" y="151" fill="#f8fafc" font-family="Segoe UI,Arial,sans-serif" font-size="58" font-weight="700" letter-spacing="-2">STime NOW</text>
+  <text x="60" y="202" fill="#cbd5e1" font-family="Segoe UI,Arial,sans-serif" font-size="25">Tempo de tela, foco e hábitos.</text>
+  <text x="60" y="286" fill="#94a3b8" font-family="Segoe UI,Arial,sans-serif" font-size="16" letter-spacing="1">FOCO PESSOAL  /  FAMÍLIAS  /  EQUIPES</text>
+  <g transform="translate(838 72)">
+    <rect width="292" height="216" rx="20" fill="#0c1928" stroke="#284052"/>
+    <path d="M28 170H264M28 120H264M28 70H264" stroke="#213449" stroke-dasharray="3 6"/>
+    <g fill="url(#bars)"><rect x="35" y="116" width="27" height="64" rx="6"/><rect x="78" y="83" width="27" height="97" rx="6"/><rect x="121" y="104" width="27" height="76" rx="6"/><rect x="164" y="42" width="27" height="138" rx="6"/><rect x="207" y="65" width="27" height="115" rx="6"/></g>
+    <circle cx="250" cy="26" r="4" fill="#5eead4"/>
+  </g>
+</svg>

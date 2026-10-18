@@ -21,6 +21,7 @@ classifiers = [
 
 [project.optional-dependencies]
 desktop = ["pandas>=2.2,<4", "matplotlib>=3.9,<4"]
+contracts = ["openapi-spec-validator==0.9.0", "jsonschema>=4.26,<5"]
 
 [project.scripts]
 activity-monitor = "activity_monitor.cli:main"
