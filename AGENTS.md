@@ -1,12 +1,17 @@
-# Instruções do projeto
+# Project instructions
 
-Este é um monitor pessoal em fase inicial, com Python 3.11+ e sem dependências externas.
+Activity Monitor is an early-stage personal activity tracking project for Python 3.11+.
 
-- Antes de editar, confira `git status`, a raiz Git e as instruções aplicáveis.
-- Preserve alterações do usuário. Nunca execute reset --hard, clean ou force push sem pedido explícito.
-- Teste com `python -m unittest discover -s tests -v`.
-- Demonstração: `python -m monitoramento --demo`.
-- Não inicie coleta real nem autostart durante setup/testes.
-- Use apenas dados fictícios em fixtures, logs de testes e exemplos.
-- Mantenha coletores específicos do sistema separados da agregação de dados.
-- Nunca adicione históricos reais, bancos locais ou segredos ao Git.
+- Read the applicable instructions, verify the Git root, and inspect `git status` before editing.
+- Preserve user changes. Do not reset, clean, or force push without an explicit request.
+- Keep documentation, code, errors, CLI output, and commit messages in English.
+- Run tests with `python -m unittest discover -s tests -v`.
+- Run the synthetic demo with `python -m activity_monitor --demo`.
+- In a cloud/Linux environment, use `.venv/bin/python`; on Windows, use `.venv\Scripts\python.exe`.
+- Cloud setup: `bash scripts/setup-cloud.sh` from the repository root.
+- The `monitoramento` package is a compatibility entry point for previously configured environments. Keep it functional.
+- Never start real collection or configure autostart during setup or tests.
+- Use synthetic data in examples, tests, fixtures, and logs.
+- Keep platform-specific collectors separate from aggregation and storage.
+- Never commit real activity history, local databases, activity exports, or secrets.
+- Describe implemented features accurately. Collection, storage, and the dashboard are not implemented yet.

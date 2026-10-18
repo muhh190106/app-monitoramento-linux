@@ -1,67 +1,100 @@
-# app-monitoramento-linux
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="Activity Monitor — Understand your time. Own your data." width="100%">
+</p>
 
-Base de desenvolvimento de um monitor pessoal inspirado na arquitetura do ActivityWatch. Código original; não é um fork. Esta primeira etapa valida o ambiente com dados fictícios, sem coletar atividade real.
+<p align="center">
+  <a href="https://github.com/muhh190106/app-monitoramento-linux/actions/workflows/tests.yml"><img src="https://github.com/muhh190106/app-monitoramento-linux/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
+  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11 or newer">
+  <img src="https://img.shields.io/badge/Platforms-Windows%20%7C%20Linux-64748B" alt="Windows and Linux">
+  <img src="https://img.shields.io/badge/Status-Early%20development-F59E0B" alt="Early development">
+</p>
 
-## Executar
+# Activity Monitor
 
-Requer Python 3.11 ou superior e Git. Não há dependências externas nesta base.
+**Understand how you spend your time, with control over your own data.**
 
-Windows:
+Activity Monitor is a personal activity tracking project being developed for Windows and Linux. Its architecture takes inspiration from [ActivityWatch](https://github.com/ActivityWatch/activitywatch): small collectors, a local data layer, and a clear view of how time is spent.
+
+> **Project status:** early development. The current version includes a tested activity aggregation core and a synthetic demo. Desktop collection, persistent storage, and a dashboard are planned features.
+
+[Quick start](#quick-start) · [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md) · [Contributing](CONTRIBUTING.md)
+
+## What works today
+
+- Summarize active time by application from normalized, non-overlapping intervals.
+- Exclude idle intervals and validate event values before aggregation.
+- Run a reproducible demo with synthetic data and no desktop permissions.
+- Test the same core on Windows and Linux with Python 3.11–3.14 in CI.
+- Prepare a development environment locally or in Codex Cloud.
+
+## Quick start
+
+Requirements: Git and Python **3.11 or newer**. The application has no third-party runtime dependencies.
+
+```bash
+git clone https://github.com/muhh190106/app-monitoramento-linux.git
+cd app-monitoramento-linux
+```
+
+### Windows · PowerShell
+
 ```powershell
 python -m venv .venv
+.\.venv\Scripts\python.exe -m activity_monitor --demo
 .\.venv\Scripts\python.exe -m unittest discover -s tests -v
-.\.venv\Scripts\python.exe -m monitoramento --demo
 ```
 
-CachyOS/Linux:
+### Linux · Bash
+
 ```bash
 python3 -m venv .venv
+.venv/bin/python -m activity_monitor --demo
 .venv/bin/python -m unittest discover -s tests -v
-.venv/bin/python -m monitoramento --demo
 ```
 
-A demonstração resume eventos fictícios em memória. Nenhum histórico real é lido ou salvo.
+The demo prints:
 
-## Papel de cada ambiente
+```json
+{
+  "demo": true,
+  "active_seconds": {
+    "Editor": 120,
+    "Browser": 60
+  }
+}
+```
 
-- GitHub guarda código e histórico de alterações.
-- PC e notebook têm clones separados e ambientes virtuais próprios.
-- Codex Cloud executa tarefas e testes sobre o código publicado.
-- A coleta de janelas e inatividade será executada nativamente em cada computador; testes na nuvem usam eventos fictícios.
+All demo events are synthetic. The demo reads no activity history and writes no tracking database.
 
-## Fluxo entre computadores
+### Optional command-line installation
 
-Clone o repositório privado em uma pasta nova em cada sistema, depois execute o setup acima. Não compartilhe a mesma pasta `.venv` entre Windows e Linux.
+Inside your virtual environment, run `python -m pip install -e .`. The `activity-monitor --demo` command then provides the same demo. Use your virtual environment's Python executable when it is not activated.
 
-Antes de trabalhar: `git status` e, estando sem alterações, `git pull --ff-only`.
-Crie uma branch por tarefa: `git switch -c codex/nome-da-tarefa`.
-Revise os arquivos, faça commit e `git push -u origin HEAD`.
-Use pull requests para integrar na main. No outro computador, obtenha a branch com `git fetch origin` e selecione-a. Alterações sem commit/push não são sincronizadas.
-Se houver alterações locais, preserve-as em um commit antes de mudar de branch; não use reset ou limpeza destrutiva.
+## Designed around personal control
 
-## Codex Cloud
+The intended product keeps activity data on the device by default, provides explicit controls for starting and pausing collection, and separates code synchronization from activity data synchronization. Those collection and storage features are still on the roadmap.
 
-1. Crie um repositório privado próprio e publique esta base na branch main.
-2. Na instalação do GitHub para a conta, permita acesso somente ao novo repositório.
-3. Na experiência atual: Work in > Cloud > Select environment > Create environment.
-4. Selecione o repositório e deixe o Codex inspecionar o projeto.
-5. Setup: `bash scripts/setup-cloud.sh`.
-6. Testes: `.venv/bin/python -m unittest discover -s tests -v`.
-7. Revise os resultados e publique o ambiente. Não há segredos ou serviços externos necessários nesta etapa.
+The development workflow uses synthetic fixtures. Local databases, activity exports, logs, and credentials belong outside version control. See [Security and privacy](SECURITY.md) for reporting guidance and [Architecture](docs/architecture.md) for the data boundary.
 
-## Próximas etapas
+## Development across devices
 
-1. Definir métricas: tempo por aplicativo, inatividade e categorias.
-2. Adicionar armazenamento SQLite local e política de retenção.
-3. Implementar coletores separados para Windows e Linux. Identificar X11/Wayland e o compositor antes de escolher o coletor Linux.
-4. Criar um painel local e controles de pausar/excluir dados.
-5. Projetar sincronização opcional dos dados separadamente da sincronização do código.
+Keep a separate clone and virtual environment on each computer and operating system. Commit and push your work before switching devices, then pull it into the other clone. The same workflow applies to dual-boot Windows/Linux systems.
 
-Não versionar históricos reais, títulos de janelas, URLs, bancos locais nem credenciais. O `.gitignore` inclui proteções iniciais; revise sempre o conteúdo de cada commit.
+For local setup, branches, checks, and cloud preparation, see the [development guide](docs/development.md).
 
-## Referências
+## Roadmap
 
-- https://github.com/ActivityWatch/activitywatch
-- https://learn.chatgpt.com/docs/cloud
+1. Define the event model and persist normalized events locally.
+2. Build Windows and Linux collectors with explicit user controls.
+3. Add a local dashboard with timelines, app totals, and categories.
+4. Design optional synchronization with documented privacy guarantees.
 
-O ActivityWatch reúne componentes em submódulos. Esta base evita precisar compilar toda a suíte para começar. Se incorporarmos código dele futuramente, avaliaremos as licenças dos componentes antes da inclusão.
+See the [full roadmap](docs/roadmap.md) for scope and acceptance criteria.
+
+## Contributing
+
+Bug reports, feature discussions, documentation improvements, and focused pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and check the roadmap before proposing a large feature.
+
+## Acknowledgments
+
+[ActivityWatch](https://github.com/ActivityWatch/activitywatch) is the architectural inspiration for this project. Activity Monitor is an independent implementation and is not affiliated with ActivityWatch. No ActivityWatch source code is included in this repository.

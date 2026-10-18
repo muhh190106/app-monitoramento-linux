@@ -1,0 +1,34 @@
+name: Bug report
+description: Report a reproducible problem using synthetic data.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Please write in English and omit personal activity data, credentials, and private paths. For security issues, see SECURITY.md."
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system, Python version, and commit or version.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Include commands and a minimal synthetic example.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include redacted error output if relevant.
+    validations:
+      required: true

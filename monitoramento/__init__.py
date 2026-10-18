@@ -1,1 +1,1 @@
-"""Núcleo independente do sistema operacional."""
+"""Compatibility package. New code should import activity_monitor."""
