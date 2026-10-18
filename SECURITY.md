@@ -2,7 +2,7 @@
 
 ## Current scope
 
-Activity Monitor is a pre-alpha development project. The current demo uses synthetic data; it does not collect desktop activity or run a background service. There is no production release or long-term support commitment yet.
+STime NOW is a pre-alpha development project. The current demo uses synthetic data; it does not collect desktop activity or run a background service. There is no production release or long-term support commitment yet.
 
 ## Report a vulnerability privately
 
@@ -14,7 +14,8 @@ Include the affected commit or version, a minimal reproduction using synthetic d
 
 - Keep activity data out of Git, issue reports, CI artifacts, and cloud development workspaces.
 - Use explicit user controls before starting future collectors.
-- Keep future local services bound to the local device by default.
+- Scope guardian and manager access to the relevant family or team; enforce authorization in the backend.
+- Define device trust, HTTPS transport, retention, and revocation before enabling agent/backend data exchange.
 - Treat window titles and URLs as sensitive information.
 - Design data retention, deletion, and synchronization deliberately before introducing them.
 

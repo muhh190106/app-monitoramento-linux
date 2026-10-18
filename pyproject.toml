@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "activity-monitor-personal"
 version = "0.1.0"
-description = "A personal activity tracking foundation for Windows and Linux."
+description = "STime NOW desktop screen-time management core for Windows and Linux."
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [{ name = "Murilo Fidelis" }]

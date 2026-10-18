@@ -1,10 +1,10 @@
-# Contributing to Activity Monitor
+# Contributing to STime NOW
 
-Thanks for helping improve Activity Monitor. The project is in early development; focused changes are easier to review and build on.
+Thanks for helping improve STime NOW. The project is in early development; focused changes are easier to review and build on.
 
 ## Before you start
 
-Read the [roadmap](docs/roadmap.md) and [architecture](docs/architecture.md). Open an issue to discuss a substantial feature or a new dependency before implementation. Keep public discussions and contributions in English so contributors from different countries can participate.
+Read the [product specification](docs/product.md), [roadmap](docs/roadmap.md), and [architecture](docs/architecture.md). Open an issue to discuss a substantial feature or a new dependency before implementation. Keep public discussions and contributions in English so contributors from different countries can participate.
 
 ## Development workflow
 

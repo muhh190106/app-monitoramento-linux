@@ -1,100 +1,54 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="Activity Monitor — Understand your time. Own your data." width="100%">
+  <img src="docs/assets/banner.svg" alt="STime NOW — Screen time, focus, and shared insights." width="100%">
 </p>
 
-<p align="center">
-  <a href="https://github.com/muhh190106/app-monitoramento-linux/actions/workflows/tests.yml"><img src="https://github.com/muhh190106/app-monitoramento-linux/actions/workflows/tests.yml/badge.svg" alt="Tests"></a>
-  <img src="https://img.shields.io/badge/Python-3.11%2B-3776AB?logo=python&logoColor=white" alt="Python 3.11 or newer">
-  <img src="https://img.shields.io/badge/Platforms-Windows%20%7C%20Linux-64748B" alt="Windows and Linux">
-  <img src="https://img.shields.io/badge/Status-Early%20development-F59E0B" alt="Early development">
-</p>
+# STime NOW
 
-# Activity Monitor
+Desktop screen-time management for personal focus, families, and teams.
 
-**Understand how you spend your time, with control over your own data.**
+STime NOW is being developed for Windows and Linux to help people understand application usage, manage distractions, and share relevant insights through role-specific dashboards.
 
-Activity Monitor is a personal activity tracking project being developed for Windows and Linux. Its architecture takes inspiration from [ActivityWatch](https://github.com/ActivityWatch/activitywatch): small collectors, a local data layer, and a clear view of how time is spent.
+**In development.** The repository currently includes an activity aggregation core and a synthetic CLI demo. Desktop monitoring, app suspension, accounts, and dashboards are planned.
 
-> **Project status:** early development. The current version includes a tested activity aggregation core and a synthetic demo. Desktop collection, persistent storage, and a dashboard are planned features.
+## Product scope
 
-[Quick start](#quick-start) · [Architecture](docs/architecture.md) · [Roadmap](docs/roadmap.md) · [Contributing](CONTRIBUTING.md)
+- **Personal focus:** explore usage charts and suspend selected apps during focus sessions.
+- **Families:** connect children through a family code, set screen-time limits, and review temporary access requests.
+- **Teams:** organize members, categorize applications, and review usage summaries and daily reports.
 
-## What works today
+The planned interface supports **English and Portuguese**, with charts powered by pandas and matplotlib. See the [product specification](docs/product.md) for roles and requirements, and the [roadmap](docs/roadmap.md) for delivery priorities.
 
-- Summarize active time by application from normalized, non-overlapping intervals.
-- Exclude idle intervals and validate event values before aggregation.
-- Run a reproducible demo with synthetic data and no desktop permissions.
-- Test the same core on Windows and Linux with Python 3.11–3.14 in CI.
-- Prepare a development environment locally or in Codex Cloud.
+## Run the demo
 
-## Quick start
-
-Requirements: Git and Python **3.11 or newer**. The application has no third-party runtime dependencies.
+Requires Git and Python 3.11+. The current demo has no third-party runtime dependencies and uses synthetic data only.
 
 ```bash
 git clone https://github.com/muhh190106/app-monitoramento-linux.git
 cd app-monitoramento-linux
 ```
 
-### Windows · PowerShell
+**Windows · PowerShell**
 
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m activity_monitor --demo
-.\.venv\Scripts\python.exe -m unittest discover -s tests -v
 ```
 
-### Linux · Bash
+**Linux · Bash**
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m activity_monitor --demo
-.venv/bin/python -m unittest discover -s tests -v
 ```
 
-The demo prints:
+The demo reports 120 active seconds for Editor and 60 for Browser. It does not collect desktop activity.
 
-```json
-{
-  "demo": true,
-  "active_seconds": {
-    "Editor": 120,
-    "Browser": 60
-  }
-}
-```
+## Documentation
 
-All demo events are synthetic. The demo reads no activity history and writes no tracking database.
+[Product specification](docs/product.md) · [Architecture](docs/architecture.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
-### Optional command-line installation
-
-Inside your virtual environment, run `python -m pip install -e .`. The `activity-monitor --demo` command then provides the same demo. Use your virtual environment's Python executable when it is not activated.
-
-## Designed around personal control
-
-The intended product keeps activity data on the device by default, provides explicit controls for starting and pausing collection, and separates code synchronization from activity data synchronization. Those collection and storage features are still on the roadmap.
-
-The development workflow uses synthetic fixtures. Local databases, activity exports, logs, and credentials belong outside version control. See [Security and privacy](SECURITY.md) for reporting guidance and [Architecture](docs/architecture.md) for the data boundary.
-
-## Development across devices
-
-Keep a separate clone and virtual environment on each computer and operating system. Commit and push your work before switching devices, then pull it into the other clone. The same workflow applies to dual-boot Windows/Linux systems.
-
-For local setup, branches, checks, and cloud preparation, see the [development guide](docs/development.md).
-
-## Roadmap
-
-1. Define the event model and persist normalized events locally.
-2. Build Windows and Linux collectors with explicit user controls.
-3. Add a local dashboard with timelines, app totals, and categories.
-4. Design optional synchronization with documented privacy guarantees.
-
-See the [full roadmap](docs/roadmap.md) for scope and acceptance criteria.
-
-## Contributing
-
-Bug reports, feature discussions, documentation improvements, and focused pull requests are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md) and check the roadmap before proposing a large feature.
+The Python package remains `activity_monitor`, and the installable command is `activity-monitor`. Setup, installation, and test commands are documented in the development guide.
 
 ## Acknowledgments
 
-[ActivityWatch](https://github.com/ActivityWatch/activitywatch) is the architectural inspiration for this project. Activity Monitor is an independent implementation and is not affiliated with ActivityWatch. No ActivityWatch source code is included in this repository.
+Inspired by [ActivityWatch](https://github.com/ActivityWatch/activitywatch). STime NOW is an independent project; no ActivityWatch source code is included.

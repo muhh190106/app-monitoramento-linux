@@ -1,21 +1,32 @@
 # Architecture
 
-Activity Monitor separates portable activity logic from operating system integration. The current repository implements the aggregation core and CLI demo. The remaining components below are planned.
+STime NOW is planned as a desktop application with an installed device agent and an application backend. The agent monitors usage and applies authorized suspension policies; the backend owns account, family, team, policy, and reporting workflows.
+
+Only the aggregation core and CLI demo are implemented. The following diagram describes the target architecture, not running services.
 
 ```mermaid
 flowchart LR
-    W[Windows collector · planned] --> N[Event normalization · planned]
-    L[Linux collector · planned] --> N
-    N --> S[Local storage · planned]
-    S --> A[Aggregation core]
-    D[Synthetic demo events] --> A
-    A --> C[CLI output]
-    A --> U[Local dashboard · planned]
+    A[Device agent] -->|Usage events| B[Application backend]
+    B -->|Authorized focus and limit policies| A
+    B <--> D[Data storage]
+    U[Desktop interface] <--> B
+    B --> C[pandas and matplotlib charts]
+    C --> U
 ```
+
+## Component boundaries
+
+**Device agent:** Windows/Linux capability detection, permission-aware collection, idle state, and application suspension/restoration. Desktop session support and enforcement semantics must be defined before implementation.
+
+**Application backend:** authentication, role selection, scoped authorization, family/team codes, membership, policy changes, temporary access decisions, and report closure. Network communication uses HTTPS. Local versus hosted deployment is still an architectural decision.
+
+**Data storage:** usage intervals, accounts, memberships, policies, audit records, requests, explanations, and reports. SQLite is an earlier candidate for local data; the full storage design is not selected yet.
+
+**Desktop interface:** role-specific dashboards, day/week/month filters, focus controls, family limits, request review, and team reports. Charts use pandas and matplotlib as required by the product specification. Layouts must adapt to screen size, support English/Portuguese, and account for accessibility.
 
 ## Current event contract
 
-`activity_monitor.summary.summarize` accepts an iterable of normalized, non-overlapping intervals:
+`activity_monitor.summary.summarize` accepts normalized, non-overlapping intervals:
 
 ```python
 {"app": "Editor", "seconds": 120, "afk": False}
@@ -23,24 +34,18 @@ flowchart LR
 
 | Field | Type | Meaning |
 | --- | --- | --- |
-| `app` | non-empty string | Application identifier or display name |
-| `seconds` | finite, non-negative number | Duration of the interval |
-| `afk` | boolean | Whether the interval represents idle time |
+| `app` | Non-empty string | Application identifier or display name |
+| `seconds` | Finite, non-negative number | Interval duration |
+| `afk` | Boolean | Whether the interval represents idle time |
 
-The function returns active seconds grouped by application. It validates idle events too, rejects invalid values with `ValueError`, and raises `KeyError` for missing fields. It does not resolve overlapping intervals or distinguish timestamps, devices, and time zones yet.
+The function returns active seconds grouped by application. Invalid values raise `ValueError`; missing fields raise `KeyError`. Timestamps, overlaps, devices, sessions, authentication, storage, and policy enforcement are not part of the current core.
 
-## Planned boundaries
+## Data and authorization
 
-**Collectors:** platform-specific adapters that produce events only after the user enables collection. Windows and Linux integrations must have independent capability detection and tests. Linux implementation must account for X11/Wayland and compositor support.
+Visitor access is local to the user's own usage. Guardian access is scoped to linked children; manager access to the managed team. Team members view only their own records. Device trust, data retention, sharing, and revocation must be specified before enabling these workflows.
 
-**Normalization:** timestamp validation, idle detection semantics, interval boundaries, overlap handling, and device identity. This layer must be defined before adding real collection.
+Use synthetic fixtures in development, CI, and cloud workspaces. Activity data does not belong in Git. Code synchronization through GitHub is independent of the product's future agent/backend data exchange.
 
-**Storage:** a local SQLite database outside the checkout, with migrations, retention, export, and deletion behavior defined before use.
+## Technical names
 
-**Presentation:** a local dashboard consuming aggregate data. It must communicate when collection is paused and expose data controls.
-
-**Synchronization:** code moves through GitHub. Future activity synchronization is a separate, optional feature that requires its own threat model and conflict handling.
-
-## Compatibility
-
-`activity_monitor` is the canonical Python package and `activity-monitor` is the installable command. The original `monitoramento` package forwards to the same implementation so existing development environments can continue running.
+The product name is **STime NOW**. The repository URL, `activity_monitor` Python package, and `activity-monitor` CLI retain their existing names. The `monitoramento` package remains a compatibility entry point for existing environments.

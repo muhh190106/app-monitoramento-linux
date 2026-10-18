@@ -50,6 +50,8 @@ It creates `.venv`, runs unit tests, and executes the synthetic demo. It does no
 
 Existing environments using `python -m monitoramento --demo` remain supported by the compatibility package. The English demo output uses `Browser` as its sample application name.
 
+The product name is STime NOW. Technical package and command names remain unchanged. Product localization in English and Portuguese, pandas/matplotlib charts, and the installed device agent are planned requirements; the synthetic CLI does not implement these features yet.
+
 ## Repository layout
 
 ```text

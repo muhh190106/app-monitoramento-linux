@@ -1,42 +1,31 @@
 # Roadmap
 
-This roadmap describes direction rather than release dates. Features are complete only when their acceptance criteria are met.
+Delivery follows the [product specification](product.md) and its Sprint 2 priorities. All milestones below are planned; only the aggregation core, synthetic CLI demo, packaging, and automated checks exist today.
 
-## Foundation · implemented
+## 1. Desktop foundation
 
-- [x] Validated aggregation of active time by application.
-- [x] Idle interval exclusion and synthetic CLI demo.
-- [x] English project documentation and contribution workflow.
-- [x] Unit tests and Windows/Linux CI.
-- [x] Python package metadata and an installable CLI.
+Define the event/session model, device identity, storage, and agent/backend boundary. Add permission-aware collection, synthetic database seeds, and a shared dashboard using pandas and matplotlib. Establish English/Portuguese localization, accessible components, and adaptable layouts from the start.
 
-## Milestone 1 · reliable local data
+Supports `V.01`, `RNG-2`–`RNG-4`, and `RNF-1`–`RNF-7`.
 
-- [ ] Define timestamp, time zone, device, and interval semantics.
-- [ ] Normalize overlapping events and idle transitions.
-- [ ] Add local SQLite storage, migrations, and retention.
-- [ ] Support export and permanent deletion through explicit user controls.
+## 2. Focus and family essentials · high priority
 
-Acceptance: deterministic tests cover overlap, time zone boundaries, migrations, retention, and deletion using synthetic fixtures.
+Implement focus sessions with automatic app restoration (`V.02`), registration and profile selection (`U.01`, `U.02`), family codes and enrollment (`PR.01`, `F.01`), and guardian-defined app limits with an audit trail (`PR.02`).
 
-## Milestone 2 · desktop collection
+Acceptance: supported platforms enforce authorized rules, restore access after focus expiry, reject invalid enrollment, and prevent children from changing guardian policies.
 
-- [ ] Implement a Windows active application collector.
-- [ ] Identify supported Linux desktop sessions and implement capability detection.
-- [ ] Add idle detection with documented semantics.
-- [ ] Add explicit start, pause, and stop controls.
+## 3. Family and team insights · medium priority
 
-Acceptance: collectors are opt-in, fail clearly on unsupported sessions, and pass integration checks on documented systems. No keystroke content is needed for the planned activity metrics.
+Add guardian/child dashboards and limit notifications (`PR.03`, `F.02`), temporary access decisions (`F.03`), team enrollment (`GR.01`, `CB.01`), personal/team dashboards (`GR.02`, `CB.02`), application categories (`GR.04`), and member explanations (`CB.03`). Keep subgroup work (`GR.05`) beside categories; its individual priority needs confirmation.
 
-## Milestone 3 · useful insights
+Acceptance: role-scoped views expose only authorized records; temporary access expires correctly; team membership and historical usage remain consistent. Define the report closure model needed by explanations before implementing `CB.03`.
 
-- [ ] Build a local dashboard with daily totals and a timeline.
-- [ ] Add user-defined application categories.
-- [ ] Explain missing data, collection status, and idle time in the interface.
-- [ ] Verify keyboard navigation and readable contrast.
+## 4. Reports and achievements · low priority
 
-Acceptance: users can inspect their day, pause collection, and manage their data without editing configuration files.
+Deliver automatic manager reports and report history (`GR.03`), plus read-only goals and streaks for children (`F.04`).
 
-## Future exploration
+Acceptance: daily reports include confirmed explanations, enforce closure rules, and support date/member filters. Achievement calculations are reproducible from synthetic fixtures.
 
-Optional activity synchronization, browser integration, packaging, and installers. These require separate design discussions and must preserve the local data boundary.
+## Delivery checks
+
+Each milestone needs behavior tests, role authorization checks, relevant Windows/Linux integration checks, English/Portuguese interface review, and accessibility verification. Planned collector and suspension behavior must be demonstrated on supported desktop sessions before being described as available.

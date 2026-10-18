@@ -1,6 +1,6 @@
 # Project instructions
 
-Activity Monitor is an early-stage personal activity tracking project for Python 3.11+.
+STime NOW is an early-stage desktop screen-time project for individuals, families, and teams. The current core uses Python 3.11+. Read docs/product.md for planned roles and requirements.
 
 - Read the applicable instructions, verify the Git root, and inspect `git status` before editing.
 - Preserve user changes. Do not reset, clean, or force push without an explicit request.
