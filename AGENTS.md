@@ -14,4 +14,7 @@ STime NOW is an early-stage desktop screen-time project for individuals, familie
 - Use synthetic data in examples, tests, fixtures, and logs.
 - Keep platform-specific collectors separate from aggregation and storage.
 - Never commit real activity history, local databases, activity exports, or secrets.
-- Describe implemented features accurately. Collection, storage, and the dashboard are not implemented yet.
+- Describe implemented features accurately. The desktop dashboard uses synthetic data. Collection, storage, accounts, and enforcement are not implemented yet.
+
+- Desktop dependencies: `python -m pip install -e ".[desktop]"`. Desktop launch: `python -m activity_monitor --desktop`.
+- Use `STIME_DESKTOP_TESTS=1` only in a graphical session or Xvfb when running Tk smoke tests.

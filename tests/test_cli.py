@@ -26,3 +26,8 @@ class CliTests(unittest.TestCase):
 
     def test_legacy_import_uses_the_canonical_core(self):
         self.assertIs(legacy_summarize, summarize)
+
+    def test_rejects_combining_desktop_and_json_modes(self):
+        with contextlib.redirect_stderr(io.StringIO()), self.assertRaises(SystemExit) as result:
+            main(["--desktop", "--demo"])
+        self.assertEqual(result.exception.code, 2)

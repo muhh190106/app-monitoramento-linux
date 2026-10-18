@@ -2,7 +2,7 @@
 
 STime NOW is a desktop screen-time management application for personal use, families, and work teams. It combines usage insights with focus sessions and role-specific access to activity data.
 
-This specification summarizes the Sprint 2 requirements. Story identifiers are retained for traceability. All product features below are planned; the current implementation is limited to a validated aggregation core and a synthetic CLI demo.
+This specification summarizes the Sprint 2 requirements. Story identifiers are retained for traceability. The requirements below describe the full planned product. The current increment implements a visitor desktop dashboard, English/Portuguese messages, and pandas/matplotlib charts using synthetic data. Live monitoring, suspension, persistence, accounts, and family/team workflows remain planned.
 
 ## User roles
 
@@ -49,7 +49,7 @@ A person with multiple roles must be able to select the appropriate profile. Tea
 | ID | Requirement |
 | --- | --- |
 | `RNF-1` | Desktop application. Windows and Linux are the repository's target platforms. |
-| `RNF-2` | Python charts using pandas and matplotlib. These dependencies are planned, not installed by the current demo. |
+| `RNF-2` | Python charts using pandas and matplotlib. These dependencies are used by the optional desktop dashboard; the lightweight CLI demo does not require them. |
 | `RNF-3` | HTTPS for network communication. |
 | `RNF-4` | Layouts that adapt to different screen sizes. |
 | `RNF-5` | Accessibility guided by WCAG; the target version and conformance level remain to be defined. |

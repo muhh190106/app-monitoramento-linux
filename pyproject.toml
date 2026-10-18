@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "activity-monitor-personal"
-version = "0.1.0"
+version = "0.2.0"
 description = "STime NOW desktop screen-time management core for Windows and Linux."
 readme = "README.md"
 requires-python = ">=3.11"
@@ -18,6 +18,9 @@ classifiers = [
   "Operating System :: POSIX :: Linux",
   "Topic :: Utilities",
 ]
+
+[project.optional-dependencies]
+desktop = ["pandas>=2.2,<4", "matplotlib>=3.9,<4"]
 
 [project.scripts]
 activity-monitor = "activity_monitor.cli:main"

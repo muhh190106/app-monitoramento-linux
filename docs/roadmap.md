@@ -1,31 +1,39 @@
-# Roadmap
+# Increment plan
 
-Delivery follows the [product specification](product.md) and its Sprint 2 priorities. All milestones below are planned; only the aggregation core, synthetic CLI demo, packaging, and automated checks exist today.
+## Near-term goal
 
-## 1. Desktop foundation
+Deliver a usable visitor experience on Windows: open the desktop app, inspect application usage over time, and control when monitoring starts and stops. Each increment must be executable and independently verifiable before expanding to family or team workflows.
 
-Define the event/session model, device identity, storage, and agent/backend boundary. Add permission-aware collection, synthetic database seeds, and a shared dashboard using pandas and matplotlib. Establish English/Portuguese localization, accessible components, and adaptable layouts from the start.
+| Increment | Outcome | Completion criteria |
+| --- | --- | --- |
+| **1 · Demo dashboard** | A working visitor interface using sample data. | Open on Windows/Linux; switch English/Portuguese; filter by application, end date, and 1/7/30-day period; show correct charts, totals, and empty states. |
+| **2 · Local history** | Store and retrieve normalized usage events. | SQLite repository and migrations; synthetic seed; history survives restart; date filters, deletion, and data location are tested. |
+| **3 · Windows collection** | Capture real foreground-app and idle intervals after explicit activation. | Start/pause/stop controls; no collection before activation; persistence; no duplicate/overlapping time; visible status and platform integration checks. |
+| **4 · Focus sessions** | Restrict selected apps for a defined period (`V.02`). | Permission checks, explicit confirmation, safe restoration on expiry/failure, and tests on supported Windows sessions. |
+| **5 · Accounts and families** | Profile selection, family enrollment, and guardian limits. | Unique accounts, scoped access, valid/revoked codes, policy audit trail, and child restrictions (`U.01`, `U.02`, `PR.01`, `F.01`, `PR.02`). |
+| **6 · Family and team insights** | Extended family dashboards, temporary access, teams, and categories. | Authorized views, expiring exceptions, membership rules, report closure model, and subgroup history preservation. |
+| **7 · Reports and achievements** | Automatic daily reports and read-only goals. | Immutable confirmed explanations, correct report filters, deterministic streak calculations (`GR.03`, `F.04`). |
 
-Supports `V.01`, `RNG-2`–`RNG-4`, and `RNF-1`–`RNF-7`.
+## Increment 1 · implemented
 
-## 2. Focus and family essentials · high priority
+- Visitor dashboard built with Tkinter, pandas, and matplotlib.
+- Active/idle metrics, application ranking, and an activity timeline.
+- Application, date, and 1/7/30-day filters.
+- English and Brazilian Portuguese interface messages.
+- Empty-data and invalid-date states; readable labels and keyboard-focusable controls.
+- Synthetic data only: no collector, database, account, or background service.
+- Unit, chart, and desktop smoke checks. Native Linux collector support and a full accessibility audit remain future work.
 
-Implement focus sessions with automatic app restoration (`V.02`), registration and profile selection (`U.01`, `U.02`), family codes and enrollment (`PR.01`, `F.01`), and guardian-defined app limits with an audit trail (`PR.02`).
+This is a demonstrable slice of `V.01`, not completion of live usage monitoring. Desktop UI checks do not establish support for Linux collectors or app suspension.
 
-Acceptance: supported platforms enforce authorized rules, restore access after focus expiry, reject invalid enrollment, and prevent children from changing guardian policies.
+## Next increment · local history
 
-## 3. Family and team insights · medium priority
+Define a storage contract before adding a collector: timestamp/time zone rules, device and session identity, event boundaries, retention, and a user data directory outside the repository. Implement SQLite access behind that contract so the dashboard can replace its synthetic provider without embedding storage logic in widgets.
 
-Add guardian/child dashboards and limit notifications (`PR.03`, `F.02`), temporary access decisions (`F.03`), team enrollment (`GR.01`, `CB.01`), personal/team dashboards (`GR.02`, `CB.02`), application categories (`GR.04`), and member explanations (`CB.03`). Keep subgroup work (`GR.05`) beside categories; its individual priority needs confirmation.
+## Priority alignment
 
-Acceptance: role-scoped views expose only authorized records; temporary access expires correctly; team membership and historical usage remain consistent. Define the report closure model needed by explanations before implementing `CB.03`.
+The [Sprint 2 specification](product.md) keeps personal focus and family essentials at high priority. Family insight extensions and team workflows follow at medium priority; automatic reports and child achievements follow at low priority. `GR.05` is grouped with team categorization in the source priority table and still needs a standalone priority decision.
 
-## 4. Reports and achievements · low priority
+## Definition of done
 
-Deliver automatic manager reports and report history (`GR.03`), plus read-only goals and streaks for children (`F.04`).
-
-Acceptance: daily reports include confirmed explanations, enforce closure rules, and support date/member filters. Achievement calculations are reproducible from synthetic fixtures.
-
-## Delivery checks
-
-Each milestone needs behavior tests, role authorization checks, relevant Windows/Linux integration checks, English/Portuguese interface review, and accessibility verification. Planned collector and suspension behavior must be demonstrated on supported desktop sessions before being described as available.
+An increment is complete when its acceptance criteria are met, relevant tests pass, the interface is visually checked, and the README accurately states what works. Add platform-specific checks before claiming collector or suspension support. Update this plan after each delivery rather than marking an entire product area complete from a demo.
