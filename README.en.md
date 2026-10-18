@@ -51,6 +51,8 @@ The [increment plan](docs/roadmap.md) defines the next steps and acceptance crit
 
 ## Documentation
 
+Joining the team? Start with the [developer onboarding guide](docs/team.md) (Portuguese), covering the five workstreams and their first deliverables.
+
 Project requirements, architecture and team documentation are maintained in Portuguese for the Software Engineering course. Code, API fields, endpoints and commit messages use English; the interface supports English and Brazilian Portuguese. Contributions and discussions are welcome in either language.
 
 [Architecture](docs/architecture.md) · [API](docs/api.md) · [Data model](docs/data-model.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)

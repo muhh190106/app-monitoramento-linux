@@ -821,7 +821,8 @@
           "started_at",
           "ended_at",
           "state"
-        ]
+        ],
+        "description": "Closed observation. Browser events identify the paired browser application and its active domain; the backend counts only intersections with the same foreground desktop application."
       },
       "EventBatch": {
         "type": "object",
@@ -866,14 +867,14 @@
                 "events": {
                   "items": {
                     "required": [
-                      "domain"
+                      "domain",
+                      "app_id",
+                      "app_name"
                     ],
                     "properties": {
                       "state": {
                         "const": "active"
-                      },
-                      "app_id": false,
-                      "app_name": false
+                      }
                     }
                   }
                 }

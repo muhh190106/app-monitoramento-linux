@@ -9,7 +9,8 @@ erDiagram
     WORKSPACES ||--o{ DEVICES : possui
     WORKSPACES ||--o{ ACCESS_TOKENS : autoriza
     WORKSPACES ||--o{ IDEMPOTENCY_REQUESTS : deduplica
-    DEVICES ||--o{ ACCESS_TOKENS : restringe
+    DEVICES o|--o{ ACCESS_TOKENS : restringe
+    APPLICATIONS o|--o{ ACCESS_TOKENS : vincula_navegador
     DEVICES ||--o{ USAGE_SESSIONS : observa
     APPLICATIONS o|--o{ USAGE_SESSIONS : identifica
     DOMAINS o|--o{ USAGE_SESSIONS : identifica
@@ -35,7 +36,7 @@ IDs são UUIDs em texto, salvo indicação contrária. Horários como `created_a
 | --- | --- |
 | `workspaces` | `id PK`, `name`, `timezone` (IANA), `retention_days` (inicialmente 90), `created_at` |
 | `devices` | `id PK`, `workspace_id FK`, `name`, `platform` (`windows`, `linux`), `ingestion_not_before` (UTC), `created_at`, `revoked_at?` |
-| `access_tokens` | `id PK`, `workspace_id FK`, `device_id? FK`, `token_hash UNIQUE`, `client_kind` (`desktop_ui`, `desktop`, `browser`), `created_at`, `expires_at`, `revoked_at?` |
+| `access_tokens` | `id PK`, `workspace_id FK`, `device_id? FK`, `browser_application_id? FK`, `token_hash UNIQUE`, `client_kind` (`desktop_ui`, `desktop`, `browser`), `created_at`, `expires_at`, `revoked_at?` |
 | `applications` | `id PK`, `app_key UNIQUE`, `display_name`, `platform` (`windows`, `linux`) |
 | `domains` | `id PK`, `hostname UNIQUE` (domínio ASCII normalizado, com correspondência exata) |
 | `usage_sessions` | `id PK` (UUID do servidor), `device_id FK`, `event_id`, `source`, `state`, `application_id? FK`, `domain_id? FK`, `started_at`, `ended_at`, `received_at`, `payload_hash`; `UNIQUE(device_id, event_id)` |
@@ -54,9 +55,9 @@ As linhas de `focus_session_rules` copiam chave e ação na criação da sessão
 ## Restrições e transações
 
 - `ended_at > started_at`; duração máxima de 60000 ms. O backend verifica tolerância de horário futuro, retenção, domínio e fuso antes de gravar.
-- Desktop ativo exige aplicativo e não tem domínio. Desktop inativo não tem nenhum alvo. Navegador exige domínio, `state=active` e ausência de aplicativo. Origem e estado usam valores enumerados fechados.
+- Desktop ativo exige aplicativo e não tem domínio. Desktop inativo não tem nenhum alvo. Navegador exige domínio, `state=active` e o aplicativo do navegador vinculado ao token. Origem e estado usam valores enumerados fechados.
 - Meta com alvo `all` não referencia recurso; `application` referencia apenas aplicativo; `domain`, apenas domínio. Regras usam os dois últimos casos. Usar `CHECK` para consistência de alvo/nulos, enumerações e limites positivos.
-- Dispositivo do token do agente/extensão deve pertencer ao espaço indicado no token. Tokens da interface não têm dispositivo restrito; os de agente/navegador exigem dispositivo. Verificar propriedade em transação, não só a existência das chaves estrangeiras.
+- Dispositivo do token do agente/extensão deve pertencer ao espaço indicado no token. Tokens da interface não têm dispositivo restrito; os de agente/navegador exigem dispositivo. `browser_application_id` é obrigatório apenas para tokens `browser` e nulo nos demais; o aplicativo deve corresponder à plataforma do dispositivo. O backend valida esse vínculo ao receber eventos. Verificar propriedade em transação, não só a existência das chaves estrangeiras.
 - Para cada `(device, source)`, a condição de sobreposição é `existing.started_at < incoming.ended_at AND existing.ended_at > incoming.started_at`. Verificá-la entre registros persistidos e recebidos na mesma transação de escrita serializada da inserção (`BEGIN IMMEDIATE` no adaptador SQLite inicial). Unicidade sozinha não impede sobreposição temporal.
 - Impedir mais de uma sessão `active` por dispositivo com índice único parcial. Reconciliar sessões expiradas na transação de início antes dessa verificação. Sessões concluídas terminam no horário programado; canceladas, no horário do cancelamento; ativas têm `finished_at` nulo.
 - Não permitir duas regras do mesmo dispositivo para o mesmo alvo normalizado. Mudar a ação exige excluir/recriar na v1. A unicidade das cópias também impede ações contraditórias na sessão.
@@ -71,7 +72,7 @@ Além dos índices de chave primária e unicidade:
 | --- | --- |
 | `devices(workspace_id, id)` | Verificar propriedade no espaço pessoal. |
 | `usage_sessions(device_id, source, started_at, ended_at)` | Consultas por período e candidatos à sobreposição. |
-| `usage_sessions(ended_at)` | Consultas por término; revisar o índice de limpeza conforme a política de retenção baseada no início. |
+| `usage_sessions(started_at)` | Limpeza por retenção baseada no início do intervalo. |
 | `goals(device_id, created_at, id)` | Paginar metas por cursor. |
 | `rules(device_id, created_at, id)` | Paginar regras por cursor. |
 | Único `rules(device_id, application_id)` para alvo aplicativo | Uma regra por aplicativo/dispositivo. |
@@ -88,7 +89,7 @@ Medir planos de consulta com volume fictício antes de adicionar índices espec�
 
 Para limites `[q_start, q_end)`, selecionar `started_at < q_end AND ended_at > q_start`. O tempo dentro de uma faixa é `max(0, min(ended_at, bucket_end) - max(started_at, bucket_start)) / 1000` segundos. Gerar limites das faixas no fuso IANA solicitado antes de consultar valores UTC. Não agrupar diretamente pela data UTC nem assumir dias de 86400 segundos.
 
-Rankings de aplicativos somam apenas interseções desktop ativas, agrupadas por chave estável. Inatividade usa apenas linhas desktop inativas. Rankings de domínio cruzam navegador e desktop ativo do mesmo dispositivo e agrupam por domínio. A ausência de sobreposição dentro de cada origem evita contagem duplicada nas interseções. Lacunas não viram inatividade presumida. Relatórios entre dispositivos ficam fora da v1.
+Rankings de aplicativos somam apenas interseções desktop ativas, agrupadas por chave estável. Inatividade usa apenas linhas desktop inativas. Rankings de domínio cruzam navegador e desktop ativo do mesmo dispositivo e aplicativo, e agrupam por domínio. Eventos da extensão enquanto outro aplicativo está em primeiro plano não entram no total do domínio. A ausência de sobreposição dentro de cada origem evita contagem duplicada nas interseções. Lacunas não viram inatividade presumida. Relatórios entre dispositivos ficam fora da v1.
 
 O período de uma meta contém o instante atual do servidor no fuso da meta. Calcular o progresso com as mesmas regras de relatório para o alvo, considerando observações até agora. Retornar `used_seconds`, `remaining_seconds=max(0, limit-used)` e `exceeded=(used > limit)`. Metas não pausam aplicativos nem alteram o recebimento de eventos.
 

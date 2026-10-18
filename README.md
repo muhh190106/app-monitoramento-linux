@@ -51,6 +51,8 @@ O [planejamento](docs/roadmap.md) apresenta as próximas entregas e seus critér
 
 ## Documentação
 
+Começando com a equipe? Veja o [guia dos desenvolvedores](docs/team.md), com as cinco frentes e a primeira entrega de cada uma.
+
 [Arquitetura](docs/architecture.md) · [API](docs/api.md) · [Modelo de dados e DER](docs/data-model.md) · [Desenvolvimento](docs/development.md) · [Contribuição](CONTRIBUTING.md) · [Segurança](SECURITY.md)
 
 A documentação principal está em português para apoiar a equipe e a avaliação acadêmica. Código, campos e endpoints permanecem em inglês; a interface oferece os dois idiomas.
