@@ -73,7 +73,7 @@ The source priority table groups subgroup organization under `GR.04`; the detail
 - **Team member enrollment:** members must authenticate, but the registration story currently offers only guardian and manager profiles. Define invitation and account creation for members.
 - **Account and device identity:** define multi-role account assignment and persistent identification for children who join without credentials, including unlinking and device replacement.
 - **Policy enforcement:** specify supported Windows/Linux sessions, required permissions, safe suspension/restoration behavior, and how family policies coexist with personal focus sessions.
-- **Service boundaries:** select the desktop UI toolkit, backend deployment, storage, device trust model, and data-sharing rules. The earlier SQLite suggestion remains a proposal, not a requirement from Sprint 2.
+- **Service boundaries:** the first integration now selects Tkinter, a local backend, SQLite and scoped local client tokens; see [API](api.md) and [data model](data-model.md). These implementation decisions do not come from Sprint 2 itself. Hosted deployment, multi-user trust and family/team sharing remain unresolved.
 
 ## Use-case map
 

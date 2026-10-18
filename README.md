@@ -49,6 +49,6 @@ The [increment plan](docs/roadmap.md) defines the next steps and acceptance crit
 
 ## Documentation
 
-[Architecture](docs/architecture.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[Architecture](docs/architecture.md) · [API](docs/api.md) · [Data model](docs/data-model.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 Inspired by [ActivityWatch](https://github.com/ActivityWatch/activitywatch). STime NOW is an independent project; no ActivityWatch source code is included.

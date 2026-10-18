@@ -78,3 +78,17 @@ Reporting currently accepts naive local wall-clock datetimes from the synthetic 
 Run all headless tests with the desktop extra installed. For Tk smoke tests, set `STIME_DESKTOP_TESTS=1` in a graphical session. On headless Linux use `xvfb-run -a env STIME_DESKTOP_TESTS=1 python -m unittest discover -s tests -v`. In Windows PowerShell, set `$env:STIME_DESKTOP_TESTS = '1'` before running the same unittest command. CI exercises both modes. Core-only installations skip optional chart/report tests.
 
 The desktop provider is in memory. It does not request monitoring permissions, inspect running apps, save activity, or run at startup. Date filters show historical sample data; dates outside the sample range demonstrate the empty state.
+
+## Integration contract review
+
+Read [API](api.md), [data model](data-model.md), and the next increment in the
+[roadmap](roadmap.md) before implementing a client or storage adapter. The
+[OpenAPI document](contracts/openapi.json) is a design contract, not a running API.
+Review schema changes together with the prose and ER diagram; keep all synthetic
+examples consistent. Changes to the current demo do not establish API compliance.
+
+For optional contract validation, install `openapi-spec-validator` in the virtual
+environment and run `python -m openapi_spec_validator docs/contracts/openapi.json`.
+This development tool is not a runtime dependency. Schema validation cannot prove
+cross-field timing, authorization, transactional overlap or aggregation behavior;
+those need implementation and integration tests in the next increment.
