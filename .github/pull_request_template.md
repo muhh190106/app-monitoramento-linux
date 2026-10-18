@@ -1,14 +1,15 @@
-## What changes?
+## O que muda?
 
-Describe the problem and resulting behavior. Link a related issue if applicable.
+Descreva o problema e o resultado da alteração. Inclua o link da issue relacionada, se houver.
 
-## Validation
+## Validação
 
-Describe the checks you ran and their results.
+Descreva as verificações realizadas e os resultados.
 
-## Checklist
+## Lista de verificação
 
-- [ ] The change is focused and documentation is updated when needed.
-- [ ] Behavior changes have appropriate tests.
-- [ ] Examples and fixtures use synthetic data.
-- [ ] No secrets, activity history, or local databases are included.
+- [ ] A alteração tem escopo claro e a documentação foi atualizada quando necessário.
+- [ ] Mudanças de comportamento têm testes adequados.
+- [ ] Exemplos e dados de teste são fictícios.
+- [ ] Não há segredos, histórico real de atividade ou bancos locais incluídos.
+- [ ] Os dois READMEs estão alinhados quando a alteração afeta instalação, funcionalidades ou limitações.

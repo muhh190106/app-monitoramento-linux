@@ -1,16 +1,18 @@
 <p align="center">
-  <img src="docs/assets/banner.svg" alt="STime NOW — Screen time, focus, and shared insights." width="100%">
+  <img src="docs/assets/banner-pt.svg" alt="STime NOW — Tempo de tela, foco e hábitos." width="100%">
 </p>
 
 # STime NOW
 
-Desktop screen-time management for personal focus, families, and teams.
+**Português** · [English](README.en.md)
 
-The first desktop increment provides a visitor dashboard with active/idle totals, usage charts, application filters, date ranges, and an English/Portuguese interface. It runs with **sample activity only**. Live monitoring, app suspension, accounts, and family/team workflows are upcoming increments.
+Aplicativo desktop de gestão do tempo de tela para foco pessoal, famílias e equipes, desenvolvido como trabalho de Engenharia de Software.
 
-## Start the desktop app
+O primeiro incremento oferece um painel de visitante com totais de uso e inatividade, gráficos, filtros por aplicativo e período e interface em português/inglês. Ele utiliza **somente dados fictícios**. Coleta real, bloqueio de aplicativos, contas e recursos de famílias/equipes estão previstos para os próximos incrementos.
 
-Requires Git, Python 3.11+, and Tk. The desktop extra installs pandas and matplotlib.
+## Executar o aplicativo
+
+Requer Git, Python 3.11+ e Tk. A instalação com a opção `desktop` inclui pandas e matplotlib.
 
 ```bash
 git clone https://github.com/muhh190106/app-monitoramento-linux.git
@@ -22,33 +24,35 @@ cd app-monitoramento-linux
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -e ".[desktop]"
-.\.venv\Scripts\python.exe -m activity_monitor --desktop
+.\.venv\Scripts\python.exe -m activity_monitor --desktop --language pt-BR
 ```
 
-After setup, double-click `start-windows.cmd` to reopen the dashboard.
+Após a configuração, dê dois cliques em `start-windows.cmd` para reabrir o painel. O idioma também pode ser alterado na interface.
 
 **Linux · Bash**
 
 ```bash
 python3 -m venv .venv
 .venv/bin/python -m pip install -e '.[desktop]'
-.venv/bin/python -m activity_monitor --desktop
+.venv/bin/python -m activity_monitor --desktop --language pt-BR
 ```
 
-Install your distribution's Tk package if `tkinter` is unavailable. Desktop mode requires a graphical session. Add `--language pt-BR` to start in Portuguese, or switch languages from the dashboard.
+Instale o pacote Tk da sua distribuição se `tkinter` não estiver disponível. O modo desktop exige uma sessão gráfica. Use `--language en` para iniciar em inglês.
 
-The lightweight CLI demo remains available through `python -m activity_monitor --demo` without the desktop extra.
+A demonstração pelo terminal continua disponível com `python -m activity_monitor --demo`, sem as dependências do painel.
 
-## Product direction
+## Direção do produto
 
-- **Personal focus:** usage insights and app suspension during focus sessions.
-- **Families:** family codes, screen-time limits, and temporary access requests.
-- **Teams:** membership, application categories, and daily reports.
+- **Foco pessoal:** acompanhamento do uso e restrições durante sessões de foco.
+- **Famílias:** códigos de ingresso, limites de tempo e pedidos de acesso temporário.
+- **Equipes:** participação, categorias de aplicativos e relatórios diários.
 
-The [increment plan](docs/roadmap.md) defines the next steps and acceptance criteria. See the [product specification](docs/product.md) for the full planned scope.
+O [planejamento](docs/roadmap.md) apresenta as próximas entregas e seus critérios de conclusão. Os [requisitos](docs/product.md) descrevem o escopo completo previsto.
 
-## Documentation
+## Documentação
 
-[Architecture](docs/architecture.md) · [API](docs/api.md) · [Data model](docs/data-model.md) · [Development](docs/development.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+[Arquitetura](docs/architecture.md) · [API](docs/api.md) · [Modelo de dados e DER](docs/data-model.md) · [Desenvolvimento](docs/development.md) · [Contribuição](CONTRIBUTING.md) · [Segurança](SECURITY.md)
 
-Inspired by [ActivityWatch](https://github.com/ActivityWatch/activitywatch). STime NOW is an independent project; no ActivityWatch source code is included.
+A documentação principal está em português para apoiar a equipe e a avaliação acadêmica. Código, campos e endpoints permanecem em inglês; a interface oferece os dois idiomas.
+
+Inspirado no [ActivityWatch](https://github.com/ActivityWatch/activitywatch). STime NOW é um projeto independente e não inclui código-fonte do ActivityWatch.

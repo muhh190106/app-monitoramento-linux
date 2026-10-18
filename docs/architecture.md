@@ -1,69 +1,69 @@
-# Architecture
+# Arquitetura
 
-STime NOW is planned as a desktop application with an installed device agent and an application backend. The agent monitors usage and applies authorized suspension policies; the backend owns account, family, team, policy, and reporting workflows.
+STime NOW é planejado como uma aplicação desktop com agente instalado e backend. O agente observa o uso e aplica restrições autorizadas; o backend concentra os fluxos de contas, famílias, equipes, políticas e relatórios.
 
-The aggregation core, CLI demo, and a visitor desktop dashboard with synthetic data are implemented. The following diagram describes the target architecture, not running services.
+O núcleo de agregação, a demonstração pelo terminal e o painel de visitante com dados fictícios já estão implementados. O diagrama representa a arquitetura desejada, não serviços em execução.
 
 ```mermaid
 flowchart LR
-    A[Device agent] -->|Usage events| B[Application backend]
-    E[Browser extension] -->|Domain events| B
-    B -->|Authorized focus and limit policies| A
-    B -->|Personal focus snapshot| E
-    B <--> D[Data storage]
-    U[Desktop interface] <--> B
-    B -->|Aggregated reporting data| U
-    U --> C[matplotlib charts]
+    A[Agente do dispositivo] -->|Eventos de uso| B[Backend]
+    E[Extensão do navegador] -->|Eventos de domínio| B
+    B -->|Políticas autorizadas de foco e limites| A
+    B -->|Regras da sessão de foco| E
+    B <--> D[Banco de dados]
+    U[Interface desktop] <--> B
+    B -->|Dados agregados| U
+    U --> C[Gráficos com matplotlib]
 ```
 
-## Component boundaries
+## Responsabilidades dos componentes
 
-**Device agent:** Windows/Linux capability detection, permission-aware collection, idle state, and application suspension/restoration. Desktop session support and enforcement semantics must be defined before implementation.
+**Agente do dispositivo:** detectar recursos disponíveis no Windows/Linux, coletar com permissão, identificar inatividade e suspender/restaurar aplicativos. O suporte às sessões gráficas e as regras de aplicação das restrições precisam ser definidos antes da implementação.
 
-**Application backend:** owns ingestion, validation, aggregation and personal focus lifecycle in the first integration. The baseline is one local backend per personal workspace, with revocable client tokens. Hosted authentication, family/team codes, membership, temporary access and report closure are later extensions. Non-loopback communication requires HTTPS.
+**Backend:** na primeira integração, recebe e valida eventos, agrega o uso e controla o ciclo das sessões de foco pessoal. A base é um backend local por espaço pessoal, com tokens de cliente revogáveis. Autenticação hospedada, códigos de famílias/equipes, participação, acesso temporário e fechamento de relatórios são extensões futuras. Comunicação fora do endereço local exige HTTPS.
 
-**Data storage:** SQLite is selected for the first local integration, outside the repository. The [data model](data-model.md) defines devices, observations, goals and focus rules. Accounts, memberships, guardian policies and team reports need a later model extension.
+**Banco de dados:** SQLite foi escolhido para a primeira integração local, com arquivos fora do repositório. O [modelo de dados](data-model.md) define dispositivos, observações, metas e regras de foco. Contas, vínculos, políticas de responsáveis e relatórios de equipes exigem uma ampliação posterior.
 
-**Desktop interface:** role-specific dashboards, day/week/month filters, focus controls, family limits, request review, and team reports. Charts use pandas and matplotlib as required by the product specification. Layouts must adapt to screen size, support English/Portuguese, and account for accessibility.
+**Interface desktop:** painéis por perfil, filtros de dia/semana/mês, controles de foco, limites familiares, análise de solicitações e relatórios de equipes. Os gráficos usam pandas e matplotlib conforme os requisitos. A interface deve se adaptar à tela, oferecer português/inglês e considerar acessibilidade.
 
-## Current local demo interface
+## Interface atual da demonstração local
 
-`activity_monitor.summary.summarize` accepts normalized, non-overlapping intervals:
+`activity_monitor.summary.summarize` recebe registros normalizados de duração; cabe ao chamador fornecer intervalos sem sobreposição:
 
 ```python
 {"app": "Editor", "seconds": 120, "afk": False}
 ```
 
-| Field | Type | Meaning |
+| Campo | Tipo | Significado |
 | --- | --- | --- |
-| `app` | Non-empty string | Application identifier or display name |
-| `seconds` | Finite, non-negative number | Interval duration |
-| `afk` | Boolean | Whether the interval represents idle time |
+| `app` | Texto não vazio | Identificador ou nome exibido do aplicativo |
+| `seconds` | Número finito e não negativo | Duração do intervalo |
+| `afk` | Booleano | Indica se o intervalo representa inatividade |
 
-The function returns active seconds grouped by application. Invalid values raise `ValueError`; missing fields raise `KeyError`. This older helper has no timestamp or device validation and is not the ingestion contract. The separate desktop reporting module validates non-overlapping synthetic intervals using naive local timestamps.
+A função retorna segundos ativos agrupados por aplicativo. Valores inválidos geram `ValueError`; campos ausentes geram `KeyError`. Esse utilitário não valida horários nem dispositivos e não é o contrato de recebimento da API. O módulo separado de relatórios do painel valida intervalos fictícios sem sobreposição, usando horários locais sem informação de fuso.
 
-## Integration contracts
+## Contratos de integração
 
-The [API contract](api.md), [OpenAPI document](contracts/openapi.json), and
-[entity model](data-model.md) define the next implementation boundary. They are
-specifications, not implemented services. UTC intervals replace naive timestamps
-at the future API boundary. Desktop and browser observations remain separate;
-browser time is intersected with desktop active time rather than added to it.
-Backend reports use calendar periods and IANA time zones. The desktop consumes
-those results and renders charts without duplicating aggregation.
+O [contrato da API](api.md), o [documento OpenAPI](contracts/openapi.json) e o [modelo de entidades](data-model.md) definem a próxima etapa. São especificações, não serviços implementados. Na futura API, intervalos UTC substituirão os horários locais sem fuso. As observações do computador e do navegador permanecem separadas: o tempo do navegador é cruzado com o uso ativo do computador, não somado a ele.
 
-## Data and authorization
+Os relatórios do backend usam períodos de calendário e fusos IANA. A interface consome os resultados e desenha os gráficos sem recalcular as agregações.
 
-Visitor access is local to the user's own usage. Guardian access is scoped to linked children; manager access to the managed team. Team members view only their own records. Device trust, data retention, sharing, and revocation must be specified before enabling these workflows.
+## Dados e autorização
 
-Use synthetic fixtures in development, CI, and cloud workspaces. Activity data does not belong in Git. Code synchronization through GitHub is independent of the product's future agent/backend data exchange.
+O visitante acessa localmente os próprios dados. Responsáveis acessam apenas filhos vinculados; gestores, a equipe administrada. Integrantes veem somente seus registros. Confiança dos dispositivos, retenção, compartilhamento e revogação precisam estar definidos antes de habilitar esses fluxos.
 
-## Technical names
+Use dados fictícios no desenvolvimento, na integração contínua (CI) e nos ambientes de nuvem. Históricos de atividade não pertencem ao Git. A sincronização de código pelo GitHub é independente da futura troca de dados entre agente e backend.
 
-The product name is **STime NOW**. The repository URL, `activity_monitor` Python package, and `activity-monitor` CLI retain their existing names. The `monitoramento` package remains a compatibility entry point for existing environments.
+## Nomes e idiomas
 
-## First desktop slice
+O produto se chama **STime NOW**. A URL do repositório, o pacote Python `activity_monitor` e o comando `activity-monitor` mantêm seus nomes. O pacote `monitoramento` continua como entrada de compatibilidade.
 
-`desktop.py` depends on a reporting interface rather than platform collection APIs. `reporting.py` clips typed intervals into period buckets and uses pandas to derive totals; `charts.py` turns the report into a matplotlib figure. The current provider generates deterministic sample data. The next increment will implement the API/storage flow and introduce an API adapter at this boundary. It must handle UTC/time-zone semantics explicitly instead of stripping time-zone information to reuse the demo implementation.
+Documentação e explicações dos diagramas ficam em português; código, entidades, campos e endpoints ficam em inglês. A interface mantém traduções em português brasileiro e inglês. O [README em inglês](../README.en.md) apresenta o projeto ao público internacional.
 
-Tkinter supplies the initial desktop shell. This is a starting toolkit decision for the visitor slice, not a commitment to the final account/backend topology. Full accessibility and platform coverage require dedicated follow-up checks.
+## Primeiro incremento desktop
+
+`desktop.py` depende da camada de relatórios, não de APIs de coleta do sistema. `reporting.py` recorta intervalos tipados em faixas de tempo e usa pandas para calcular totais; `charts.py` transforma o relatório em um gráfico matplotlib. O provedor atual gera dados fictícios determinísticos.
+
+O próximo incremento implementará o fluxo API/banco e um adaptador de API nessa fronteira. Ele deve tratar UTC e fusos explicitamente, sem remover essa informação para reutilizar os cálculos da demonstração.
+
+Tkinter fornece a interface inicial do visitante. Essa escolha não fecha a arquitetura futura de contas e backend. Acessibilidade completa e cobertura de plataformas exigem verificações específicas posteriores.

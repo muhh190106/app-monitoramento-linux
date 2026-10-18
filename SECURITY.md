@@ -1,22 +1,22 @@
-# Security and privacy
+# Segurança e privacidade
 
-## Current scope
+## Escopo atual
 
-STime NOW is a pre-alpha development project. The current demo uses synthetic data; it does not collect desktop activity or run a background service. There is no production release or long-term support commitment yet.
+STime NOW é um projeto em estágio inicial. A demonstração utiliza dados fictícios e não coleta atividade do computador nem executa um serviço em segundo plano. Ainda não há uma versão de produção ou compromisso de suporte de longo prazo.
 
-## Report a vulnerability privately
+## Relatar uma vulnerabilidade em particular
 
-Use the repository's **Security > Report a vulnerability** option when private vulnerability reporting is available. If that option is unavailable, open an issue requesting a private reporting channel without including vulnerability details, personal data, or exploit instructions. Wait for a private channel before sharing sensitive information.
+Use **Security > Report a vulnerability** no GitHub quando a opção de relato privado estiver disponível. Caso não esteja, abra uma issue pedindo um canal privado, sem publicar detalhes da vulnerabilidade, dados pessoais ou instruções de exploração. Aguarde esse canal antes de compartilhar informações sensíveis. Relatos podem ser escritos em português ou inglês.
 
-Include the affected commit or version, a minimal reproduction using synthetic data, the expected impact, and any suggested mitigation. Do not post real activity histories or credentials.
+Informe a versão ou commit afetado, uma reprodução mínima com dados fictícios, o impacto esperado e possíveis medidas de correção. Não publique históricos reais de atividade nem credenciais.
 
-## Data handling principles
+## Princípios para tratamento de dados
 
-- Keep activity data out of Git, issue reports, CI artifacts, and cloud development workspaces.
-- Use explicit user controls before starting future collectors.
-- Scope guardian and manager access to the relevant family or team; enforce authorization in the backend.
-- Define device trust, HTTPS transport, retention, and revocation before enabling agent/backend data exchange.
-- Treat window titles and URLs as sensitive information.
-- Design data retention, deletion, and synchronization deliberately before introducing them.
+- Mantenha dados de atividade fora do Git, das issues, dos artefatos de CI e dos ambientes de desenvolvimento na nuvem.
+- Exija uma ação explícita do usuário antes de iniciar futuros coletores.
+- Restrinja o acesso de responsáveis e gestores à família ou equipe correspondente, com autorização verificada no backend.
+- Defina confiança dos dispositivos, transporte HTTPS, retenção e revogação antes de habilitar a comunicação entre agente e backend.
+- Trate títulos de janelas e URLs como informações sensíveis.
+- Planeje retenção, exclusão e sincronização antes de implementar esses recursos.
 
-These are development requirements for upcoming features, not claims that collection and storage have already been implemented.
+Estas são exigências para o desenvolvimento dos próximos recursos, não uma afirmação de que coleta e armazenamento já foram implementados.

@@ -1,179 +1,109 @@
-# Data model
+# Modelo de dados e DER
 
-Status: logical design v1 for personal usage, goals and focus. No database,
-migrations or persistence layer has been implemented. This is the complete entity
-map for the five-developer integration scope, not the complete family/team product.
-See [API contract](api.md) for event and reporting semantics.
+Estado: modelo lógico v1 para uso pessoal, metas e foco. Banco, migrações e persistência ainda não foram implementados. Este é o mapa de entidades do escopo de integração das cinco frentes, não o modelo completo de famílias/equipes. Consulte o [contrato da API](api.md) para as regras de eventos e relatórios.
 
-## Relationships
+## Relacionamentos
 
 ```mermaid
 erDiagram
-    WORKSPACES ||--o{ DEVICES : owns
-    WORKSPACES ||--o{ ACCESS_TOKENS : authorizes
-    WORKSPACES ||--o{ IDEMPOTENCY_REQUESTS : deduplicates
-    DEVICES ||--o{ ACCESS_TOKENS : scopes
-    DEVICES ||--o{ USAGE_SESSIONS : observes
-    APPLICATIONS o|--o{ USAGE_SESSIONS : identifies
-    DOMAINS o|--o{ USAGE_SESSIONS : identifies
-    DEVICES ||--o{ GOALS : measures
-    APPLICATIONS o|--o{ GOALS : targets
-    DOMAINS o|--o{ GOALS : targets
-    DEVICES ||--o{ RULES : configures
-    APPLICATIONS o|--o{ RULES : targets
-    DOMAINS o|--o{ RULES : targets
-    DEVICES ||--o{ FOCUS_SESSIONS : runs
-    FOCUS_SESSIONS ||--|{ FOCUS_SESSION_RULES : snapshots
+    WORKSPACES ||--o{ DEVICES : possui
+    WORKSPACES ||--o{ ACCESS_TOKENS : autoriza
+    WORKSPACES ||--o{ IDEMPOTENCY_REQUESTS : deduplica
+    DEVICES ||--o{ ACCESS_TOKENS : restringe
+    DEVICES ||--o{ USAGE_SESSIONS : observa
+    APPLICATIONS o|--o{ USAGE_SESSIONS : identifica
+    DOMAINS o|--o{ USAGE_SESSIONS : identifica
+    DEVICES ||--o{ GOALS : acompanha
+    APPLICATIONS o|--o{ GOALS : identifica_alvo
+    DOMAINS o|--o{ GOALS : identifica_alvo
+    DEVICES ||--o{ RULES : configura
+    APPLICATIONS o|--o{ RULES : identifica_alvo
+    DOMAINS o|--o{ RULES : identifica_alvo
+    DEVICES ||--o{ FOCUS_SESSIONS : executa
+    FOCUS_SESSIONS ||--|{ FOCUS_SESSION_RULES : copia
 ```
 
-`rules` combines blocklist and allowlist entries through `action`; two tables
-would duplicate the same target and ownership structure. `usage_sessions` stores
-closed raw observation intervals, not an entire login session or a derived daily
-total. Browser and desktop observations are separate rows.
+`rules` reúne listas de bloqueio e permissão pelo campo `action`; duas tabelas duplicariam a estrutura de alvos e propriedade. `usage_sessions` guarda intervalos brutos encerrados, não uma sessão inteira de login nem um total diário calculado. Observações desktop e do navegador ocupam linhas separadas.
 
-## Entity dictionary
+Os nomes de entidades e campos ficam em inglês para corresponder ao código e à API. No diagrama, `WORKSPACES` são espaços pessoais; `DEVICES`, dispositivos; `ACCESS_TOKENS`, credenciais de acesso; `USAGE_SESSIONS`, observações de uso; `APPLICATIONS` e `DOMAINS`, aplicativos e domínios; `GOALS`, metas; `RULES`, regras; `FOCUS_SESSIONS`, sessões de foco; `FOCUS_SESSION_RULES`, suas cópias de regras; e `IDEMPOTENCY_REQUESTS`, comprovantes para evitar operações repetidas.
 
-All IDs are UUID strings unless noted. `created_at` and other timestamps are UTC;
-store epoch milliseconds as integers in the initial SQLite implementation. API
-serialization converts them to/from UTC strings. Durations are derived from
-timestamps, not independently writable. `?` denotes nullable fields; other fields
-are required. Foreign keys are enforced on every connection.
+## Dicionário de entidades
 
-| Entity | Fields and keys |
+IDs são UUIDs em texto, salvo indicação contrária. Horários como `created_at` usam UTC; no SQLite inicial, guardar milissegundos desde a época Unix como inteiros. A API converte para/de textos UTC. Durações são calculadas pelos horários, não gravadas independentemente. `?` indica campo que aceita nulo; os demais são obrigatórios. Habilitar chaves estrangeiras em toda conexão. `PK` significa chave primária; `FK`, chave estrangeira; `UNIQUE`, unicidade.
+
+| Entidade | Campos e chaves |
 | --- | --- |
-| `workspaces` | `id PK`, `name`, `timezone` (IANA), `retention_days` (initially 90), `created_at` |
+| `workspaces` | `id PK`, `name`, `timezone` (IANA), `retention_days` (inicialmente 90), `created_at` |
 | `devices` | `id PK`, `workspace_id FK`, `name`, `platform` (`windows`, `linux`), `ingestion_not_before` (UTC), `created_at`, `revoked_at?` |
 | `access_tokens` | `id PK`, `workspace_id FK`, `device_id? FK`, `token_hash UNIQUE`, `client_kind` (`desktop_ui`, `desktop`, `browser`), `created_at`, `expires_at`, `revoked_at?` |
 | `applications` | `id PK`, `app_key UNIQUE`, `display_name`, `platform` (`windows`, `linux`) |
-| `domains` | `id PK`, `hostname UNIQUE` (canonical ASCII exact hostname) |
-| `usage_sessions` | `id PK` (server UUID), `device_id FK`, `event_id`, `source`, `state`, `application_id? FK`, `domain_id? FK`, `started_at`, `ended_at`, `received_at`, `payload_hash`; `UNIQUE(device_id, event_id)` |
+| `domains` | `id PK`, `hostname UNIQUE` (domínio ASCII normalizado, com correspondência exata) |
+| `usage_sessions` | `id PK` (UUID do servidor), `device_id FK`, `event_id`, `source`, `state`, `application_id? FK`, `domain_id? FK`, `started_at`, `ended_at`, `received_at`, `payload_hash`; `UNIQUE(device_id, event_id)` |
 | `goals` | `id PK`, `device_id FK`, `target_type` (`all`, `application`, `domain`), `application_id? FK`, `domain_id? FK`, `period` (`day`, `week`, `month`), `timezone`, `limit_seconds` (>0), `created_at` |
 | `rules` | `id PK`, `device_id FK`, `target_type` (`application`, `domain`), `application_id? FK`, `domain_id? FK`, `action` (`block`, `allow`), `created_at` |
 | `focus_sessions` | `id PK`, `device_id FK`, `status` (`active`, `completed`, `cancelled`), `started_at`, `scheduled_end_at`, `finished_at?`, `created_at` |
 | `focus_session_rules` | `id PK`, `focus_id FK`, `target_type`, `target_key`, `action`; `UNIQUE(focus_id, target_type, target_key)` |
-| `idempotency_requests` | `workspace_id FK`, `route`, `key`, `request_hash`, `response_status`, `response_body`, `created_at`, `expires_at`; composite PK `(workspace_id, route, key)` |
+| `idempotency_requests` | `workspace_id FK`, `route`, `key`, `request_hash`, `response_status`, `response_body`, `created_at`, `expires_at`; chave primária composta `(workspace_id, route, key)` |
 
-Applications are keyed by platform identity, not display name. Two applications
-with the same display label remain distinct. Display-name updates never change
-event identity. Canonical payload hashes include the original normalized event
-fields, including the supplied app label; mutable catalog labels do not alter
-duplicate detection. App/domain IDs in rules and goals must resolve to known
-catalog entries. Rule/goal creation uses API resource keys and resolves those IDs
-transactionally. Application platform must match its device in observations,
-goals and rules. Catalog entries may exist before observations.
+Aplicativos são identificados pela chave da plataforma, não pelo nome exibido. Dois aplicativos com o mesmo rótulo continuam distintos. Alterar o nome de exibição não muda a identidade do evento. O hash do conteúdo inclui os campos originais normalizados, inclusive o nome enviado; alterações no catálogo não mudam a detecção de duplicatas.
 
-Snapshot rows copy a rule's key and action at focus creation, rather than depending
-on mutable/deletable rule rows. Each focus session requires at least one rule.
-Editing/deleting source rules never weakens an already active session.
+Aplicativos/domínios de metas e regras devem existir no catálogo. A criação usa as chaves de recursos da API e resolve os IDs dentro de uma transação. A plataforma do aplicativo deve ser compatível com o dispositivo em observações, metas e regras. O catálogo pode conter entradas antes de haver observações.
 
-## Constraints and transactions
+As linhas de `focus_session_rules` copiam chave e ação na criação da sessão, em vez de depender de regras que possam ser alteradas ou excluídas. Cada sessão exige pelo menos uma regra. Alterar/excluir a regra de origem não enfraquece uma sessão já ativa.
 
-- `ended_at > started_at`; observations last at most 60000 ms. The backend enforces
-  future tolerance, retention and hostname/time-zone validation before insertion.
-- Active desktop rows require an application and no domain. Idle desktop rows
-  have neither target. Browser rows require a domain, `state=active`, and no
-  application. Source and state use closed enumerations.
-- Goals require no target for `all`, only an application for `application`, and
-  only a domain for `domain`. Rules use the latter two cases. Use `CHECK`
-  constraints for target/null consistency as well as enum and positive limits.
-- Agent/extension token device ownership must match token workspace ownership.
-  Desktop UI tokens have no device scope; agent/browser tokens require one.
-  Check ownership transactionally, not just the existence of each foreign key.
-- For each `(device, source)`, the overlap predicate is
-  `existing.started_at < incoming.ended_at AND existing.ended_at > incoming.started_at`.
-  Check it for both persisted and incoming rows inside the same serialized write
-  transaction as insertion (`BEGIN IMMEDIATE` for the initial SQLite adapter).
-  A unique constraint alone cannot prevent overlapping intervals.
-- Enforce at most one `active` focus per device with a partial unique index.
-  Reconcile elapsed sessions inside the start transaction before testing it.
-  Completed sessions finish at scheduled expiry; cancelled sessions finish at
-  cancellation time. Active sessions have no `finished_at`.
-- A device cannot have two rules for the same canonical target; changing action
-  requires deleting/recreating the rule in v1. Snapshot uniqueness also prevents
-  contradictory actions in a session.
-- Device revocation disables ingestion immediately but retains history until
-  explicit deletion or expiry. Token revocation is checked on every request.
-- Event batches, focus creation plus snapshots, and idempotency records plus
-  their resource writes commit atomically. Roll back all changes on failure.
+## Restrições e transações
 
-## Index plan
+- `ended_at > started_at`; duração máxima de 60000 ms. O backend verifica tolerância de horário futuro, retenção, domínio e fuso antes de gravar.
+- Desktop ativo exige aplicativo e não tem domínio. Desktop inativo não tem nenhum alvo. Navegador exige domínio, `state=active` e ausência de aplicativo. Origem e estado usam valores enumerados fechados.
+- Meta com alvo `all` não referencia recurso; `application` referencia apenas aplicativo; `domain`, apenas domínio. Regras usam os dois últimos casos. Usar `CHECK` para consistência de alvo/nulos, enumerações e limites positivos.
+- Dispositivo do token do agente/extensão deve pertencer ao espaço indicado no token. Tokens da interface não têm dispositivo restrito; os de agente/navegador exigem dispositivo. Verificar propriedade em transação, não só a existência das chaves estrangeiras.
+- Para cada `(device, source)`, a condição de sobreposição é `existing.started_at < incoming.ended_at AND existing.ended_at > incoming.started_at`. Verificá-la entre registros persistidos e recebidos na mesma transação de escrita serializada da inserção (`BEGIN IMMEDIATE` no adaptador SQLite inicial). Unicidade sozinha não impede sobreposição temporal.
+- Impedir mais de uma sessão `active` por dispositivo com índice único parcial. Reconciliar sessões expiradas na transação de início antes dessa verificação. Sessões concluídas terminam no horário programado; canceladas, no horário do cancelamento; ativas têm `finished_at` nulo.
+- Não permitir duas regras do mesmo dispositivo para o mesmo alvo normalizado. Mudar a ação exige excluir/recriar na v1. A unicidade das cópias também impede ações contraditórias na sessão.
+- Revogar dispositivo bloqueia imediatamente o recebimento, preservando histórico até exclusão explícita ou expiração. Verificar revogação de tokens a cada requisição.
+- Lotes de eventos, criação de foco com cópias e gravação de recursos com comprovantes de idempotência devem ser atômicos. Em falha, desfazer toda a transação.
 
-In addition to PK/unique indexes:
+## Índices previstos
 
-| Index | Purpose |
+Além dos índices de chave primária e unicidade:
+
+| Índice | Finalidade |
 | --- | --- |
-| `devices(workspace_id, id)` | Resolve workspace ownership. |
-| `usage_sessions(device_id, source, started_at, ended_at)` | Range reports and overlap candidates. |
-| `usage_sessions(ended_at)` | Retention cleanup. |
-| `goals(device_id, created_at, id)` | Cursor-ordered goal listing. |
-| `rules(device_id, created_at, id)` | Cursor-ordered policy listing. |
-| Unique `rules(device_id, application_id)` where target is application | One app rule per device. |
-| Unique `rules(device_id, domain_id)` where target is domain | One domain rule per device. |
-| `focus_sessions(device_id, created_at, id)` | Cursor-ordered history. |
-| Unique `focus_sessions(device_id)` where status is active | One running focus per device. |
-| `focus_sessions(status, scheduled_end_at)` | Expiry reconciliation. |
-| `focus_session_rules(focus_id)` | Read immutable policy snapshot. |
-| `idempotency_requests(expires_at)` | Expire retry receipts. |
+| `devices(workspace_id, id)` | Verificar propriedade no espaço pessoal. |
+| `usage_sessions(device_id, source, started_at, ended_at)` | Consultas por período e candidatos à sobreposição. |
+| `usage_sessions(ended_at)` | Consultas por término; revisar o índice de limpeza conforme a política de retenção baseada no início. |
+| `goals(device_id, created_at, id)` | Paginar metas por cursor. |
+| `rules(device_id, created_at, id)` | Paginar regras por cursor. |
+| Único `rules(device_id, application_id)` para alvo aplicativo | Uma regra por aplicativo/dispositivo. |
+| Único `rules(device_id, domain_id)` para alvo domínio | Uma regra por domínio/dispositivo. |
+| `focus_sessions(device_id, created_at, id)` | Paginar histórico de foco. |
+| Único `focus_sessions(device_id)` quando o estado é ativo | Uma sessão em execução por dispositivo. |
+| `focus_sessions(status, scheduled_end_at)` | Reconciliar expiração. |
+| `focus_session_rules(focus_id)` | Ler a cópia imutável das regras. |
+| `idempotency_requests(expires_at)` | Excluir comprovantes de reenvio expirados. |
 
-Measure query plans with synthetic volumes before adding resource-specific
-indexes or materialized daily totals. The initial schema keeps intervals as the
-source of truth; it does not store derived rankings or goal progress.
+Medir planos de consulta com volume fictício antes de adicionar índices específicos ou totais diários pré-calculados. Os intervalos são a fonte de verdade; a primeira versão não armazena rankings nem progresso de metas derivados.
 
-## Aggregation and goals
+## Agregação e metas
 
-For query bounds `[q_start, q_end)`, select intervals with
-`started_at < q_end AND ended_at > q_start`. Duration inside a bucket is
-`max(0, min(ended_at, bucket_end) - max(started_at, bucket_start)) / 1000` seconds.
-Generate bucket boundaries in the request's IANA zone before querying UTC values.
-Do not group directly by UTC date or assume every day is 86400 seconds.
+Para limites `[q_start, q_end)`, selecionar `started_at < q_end AND ended_at > q_start`. O tempo dentro de uma faixa é `max(0, min(ended_at, bucket_end) - max(started_at, bucket_start)) / 1000` segundos. Gerar limites das faixas no fuso IANA solicitado antes de consultar valores UTC. Não agrupar diretamente pela data UTC nem assumir dias de 86400 segundos.
 
-Application rankings sum only active desktop intersections, grouped by stable
-application key. Idle totals use idle desktop rows. Domain rankings sum browser
-intersections with desktop active rows for the same device, grouped by domain;
-source-level non-overlap ensures intersections cannot double count. Missing
-observations are gaps, not inferred idle time. Keep cross-device reports out of v1.
+Rankings de aplicativos somam apenas interseções desktop ativas, agrupadas por chave estável. Inatividade usa apenas linhas desktop inativas. Rankings de domínio cruzam navegador e desktop ativo do mesmo dispositivo e agrupam por domínio. A ausência de sobreposição dentro de cada origem evita contagem duplicada nas interseções. Lacunas não viram inatividade presumida. Relatórios entre dispositivos ficam fora da v1.
 
-A goal's period contains the server's current instant in the goal's time zone.
-Compute progress with the same reporting rules for its target, using observations
-up to now. Return `used_seconds`, `remaining_seconds=max(0, limit-used)`, and
-`exceeded=(used > limit)`. Goals do not pause apps or alter ingestion.
+O período de uma meta contém o instante atual do servidor no fuso da meta. Calcular o progresso com as mesmas regras de relatório para o alvo, considerando observações até agora. Retornar `used_seconds`, `remaining_seconds=max(0, limit-used)` e `exceeded=(used > limit)`. Metas não pausam aplicativos nem alteram o recebimento de eventos.
 
-## Migration, seed and deletion plan
+## Migrações, exemplos e exclusão
 
-The database developer will add ordered migrations with a `schema_migrations`
-version table; each migration must be transactional, preserve existing data, and
-be tested against an earlier schema. No startup code may replace an existing
-database. SQLite is the initial local adapter; a future hosted adapter must
-preserve these invariants and supply equivalent concurrency protection.
+A frente de banco adicionará migrações ordenadas e tabela `schema_migrations`. Cada migração deve usar transação, preservar dados existentes e ser testada a partir de um esquema anterior. A inicialização não pode substituir um banco existente. SQLite é o adaptador local inicial; um futuro adaptador hospedado deve preservar essas garantias e proteger escritas concorrentes de forma equivalente.
 
-Use the OS user-data directory, configurable for tests, never the Git checkout.
-Fixtures must include a fictional workspace/device, active and idle app events,
-overlapping browser observations, goals and rule/focus examples. Seeds must be an
-explicit development action, deterministic and repeatable, and must never run
-automatically on a user's database.
+Usar o diretório de dados do usuário do sistema, configurável nos testes, nunca o repositório. Os exemplos devem incluir espaço/dispositivo fictícios, uso ativo e inativo, observações do navegador sobrepostas ao desktop, metas e regras/sessões de foco. A carga de exemplos deve ser explícita, determinística e repetível; nunca automática no banco do usuário.
 
-Retention drops intervals starting before the cutoff, including crossing intervals
-(at most 60 seconds of additional data), and advances each device's
-`ingestion_not_before` monotonically to at least that cutoff. Reject replay of
-events starting before this boundary, even if retention is later increased.
-Manual history deletion must also prevent queued events from restoring deleted
-history: the first integrated increment must implement a per-device ingestion
-cutoff advanced by its local administrative deletion command. Preserve this
-cutoff in the `devices.ingestion_not_before` required UTC field initialized at the
-retention boundary during provisioning. The API rejects older starts even when
-the retention setting later grows. No history-delete HTTP endpoint is reserved
-yet; local administration and deletion tests are required first.
+A retenção remove intervalos iniciados antes do corte, inclusive os que o atravessam (perda adicional máxima de 60 segundos), e avança `ingestion_not_before` de cada dispositivo sem retroceder. Rejeitar reenvios anteriores a esse limite, mesmo que o prazo de retenção aumente depois.
 
-Device removal cascades its events, tokens, goals, rules and focus history;
-focus removal cascades snapshots. Workspace removal cascades its devices,
-workspace tokens and idempotency receipts. Application/domain removal is
-restricted while referenced. Garbage-collect unreferenced catalog entries so
-deleted history does not leave app/domain metadata behind. Revocation is distinct
-from deletion. Neither operation is currently implemented.
+A exclusão manual também deve impedir que filas restaurem o histórico. O primeiro incremento integrado deve implementar um comando administrativo local que avance esse corte por dispositivo. Inicializar `devices.ingestion_not_before` no limite de retenção durante o provisionamento. A API rejeita inícios anteriores ao corte. Ainda não há rota HTTP reservada para excluir histórico; administração local e testes de exclusão vêm primeiro.
 
-## Scope limits
+Excluir dispositivo remove em cascata eventos, tokens, metas, regras e histórico de foco. Excluir foco remove as cópias das regras. Excluir espaço remove dispositivos, tokens do espaço e comprovantes de idempotência. Excluir aplicativo/domínio é proibido enquanto houver referência. Limpar entradas do catálogo sem referências para não deixar metadados de histórico excluído. Revogação é diferente de exclusão; nenhuma dessas operações está implementada atualmente.
 
-Account credentials, family/team memberships, guardian policies and exceptions,
-categories, subgroups, achievements and immutable team reports require a separate
-model extension from [product.md](product.md). Do not represent families or teams
-as v1 personal workspaces, or expose personal tokens as multi-user authentication.
+## Limites do escopo
+
+Credenciais de contas, vínculos familiares/de equipe, políticas de responsáveis, exceções, categorias, subgrupos, conquistas e relatórios imutáveis precisam de ampliação específica a partir dos [requisitos](product.md). Não representar famílias/equipes como espaços pessoais v1 nem tratar tokens pessoais como autenticação de múltiplos usuários.
