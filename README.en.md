@@ -41,6 +41,10 @@ Install your distribution's Tk package if `tkinter` is unavailable. Desktop mode
 
 The lightweight CLI demo remains available through `python -m activity_monitor --demo` without the desktop extra.
 
+## Database
+
+The SQLite layer includes migrations, event storage, daily/weekly/monthly reports, and history maintenance. See the [storage guide](docs/storage.md) (Portuguese). The dashboard still uses in-memory sample data; API integration is the next step.
+
 ## Product direction
 
 - **Personal focus:** usage insights and app suspension during focus sessions.

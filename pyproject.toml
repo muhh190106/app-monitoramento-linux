@@ -22,6 +22,7 @@ classifiers = [
 [project.optional-dependencies]
 desktop = ["pandas>=2.2,<4", "matplotlib>=3.9,<4"]
 contracts = ["openapi-spec-validator==0.9.0", "jsonschema>=4.26,<5"]
+storage = ["tzdata>=2025.2"]
 
 [project.scripts]
 activity-monitor = "activity_monitor.cli:main"
@@ -33,3 +34,6 @@ Roadmap = "https://github.com/muhh190106/app-monitoramento-linux/blob/main/docs/
 
 [tool.setuptools.packages.find]
 include = ["activity_monitor*", "monitoramento*"]
+
+[tool.setuptools.package-data]
+"activity_monitor.storage" = ["migrations/*.sql"]
