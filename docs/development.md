@@ -88,7 +88,7 @@ O provedor atual fica em memória: não pede permissões de monitoramento, inspe
 
 ## Revisar os contratos de integração
 
-Leia [API](api.md), [modelo de dados](data-model.md) e o próximo incremento do [planejamento](roadmap.md) antes de implementar clientes ou armazenamento. O [documento OpenAPI](contracts/openapi.json) é uma especificação, não uma API em execução.
+Leia [API](api.md), [modelo de dados](data-model.md) e o próximo incremento do [planejamento](roadmap.md) antes de implementar clientes. A camada de armazenamento já pode ser usada conforme o [guia SQLite](storage.md). O [documento OpenAPI](contracts/openapi.json) é uma especificação, não uma API em execução.
 
 Revise alterações de esquema junto com o texto e o DER e mantenha os exemplos fictícios consistentes. Mudar a demonstração atual não comprova conformidade com a API.
 

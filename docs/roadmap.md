@@ -21,18 +21,18 @@ Entregar uma experiência de visitante utilizável no Windows: abrir o painel, c
 - Filtros por aplicativo, data e períodos de 1/7/30 dias.
 - Mensagens em português brasileiro e inglês.
 - Estados sem dados e com data inválida; rótulos legíveis e controles acessíveis pelo teclado.
-- Somente dados fictícios: sem coletor, banco, contas ou serviço em segundo plano.
+- O painel usa somente dados fictícios em memória: sem conexão ao banco, coletor, contas ou serviço em segundo plano.
 - Testes unitários, de gráficos e de abertura/interação básica do painel. Coleta nativa no Linux e auditoria completa de acessibilidade ainda estão pendentes.
 
 Esta entrega demonstra parte de `V.01`; não conclui o monitoramento real. Testes da interface no Linux não comprovam suporte à coleta ou à suspensão de aplicativos.
 
 ## Base de integração · especificada
 
-O [contrato da API](api.md), o [documento OpenAPI](contracts/openapi.json) e o [modelo de dados](data-model.md) estabelecem o acordo entre as cinco frentes. Esta etapa conclui apenas a especificação. Endpoints, migrações, clientes e testes entre módulos ainda não foram implementados. As rotas de foco e metas ficam reservadas para as próximas entregas; famílias/equipes exigem uma ampliação separada do modelo.
+O [contrato da API](api.md), o [documento OpenAPI](contracts/openapi.json) e o [modelo de dados](data-model.md) estabelecem o acordo entre as cinco frentes. A especificação está acompanhada da primeira entrega de [armazenamento SQLite](storage.md): migrações, transações, consultas, exemplos fictícios e manutenção do histórico. Endpoints, clientes e testes do fluxo completo ainda não foram implementados. As rotas de foco e metas ficam reservadas para as próximas entregas; famílias/equipes exigem uma ampliação separada do modelo.
 
 ## Próximo incremento · fluxo integrado com dados fictícios
 
-1. **Banco:** implementar migrações SQLite versionadas, restrições, índices, transações, carga explícita de exemplos fictícios e exclusão/retenção local.
+1. **Banco — primeira entrega implementada:** migrações SQLite versionadas, restrições, índices, transações, carga explícita de exemplos fictícios e exclusão/retenção local. Próximo passo: integrar ao backend e completar os serviços de metas e foco.
 2. **Backend:** provisionar localmente espaço pessoal, dispositivo e tokens restritos; implementar recebimento em lote e consultas de uso sobre esse banco.
 3. **Agente:** fornecer um emissor fictício com IDs estáveis e novas tentativas de envio; adicionar coleta real apenas depois de validar o fluxo.
 4. **Extensão/foco:** enviar intervalos fictícios de domínios para a mesma API e verificar credenciais separadas por origem; implementar permissões e bloqueios posteriormente, seguindo o contrato de foco.

@@ -2,7 +2,7 @@
 
 STime NOW é um aplicativo desktop de gestão do tempo de tela para uso pessoal, famílias e equipes de trabalho. Combina acompanhamento de uso, sessões de foco e acesso aos dados conforme o perfil.
 
-Esta especificação resume os requisitos da Sprint 2 e mantém os identificadores das histórias para rastreabilidade. O escopo abaixo descreve o produto planejado. O incremento atual implementa o painel de visitante, mensagens em português/inglês e gráficos com pandas/matplotlib sobre dados fictícios. Monitoramento real, suspensão, persistência, contas e fluxos de famílias/equipes ainda estão planejados.
+Esta especificação resume os requisitos da Sprint 2 e mantém os identificadores das histórias para rastreabilidade. O escopo abaixo descreve o produto planejado. O incremento atual implementa o painel de visitante, mensagens em português/inglês e gráficos com pandas/matplotlib sobre dados fictícios. A camada SQLite também está implementada separadamente, com persistência e consultas. Integração do painel com o banco, monitoramento real, suspensão, contas e fluxos de famílias/equipes ainda estão planejados.
 
 ## Perfis de usuário
 

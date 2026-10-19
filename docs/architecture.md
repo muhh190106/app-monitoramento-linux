@@ -2,7 +2,7 @@
 
 STime NOW é planejado como uma aplicação desktop com agente instalado e backend. O agente observa o uso e aplica restrições autorizadas; o backend concentra os fluxos de contas, famílias, equipes, políticas e relatórios.
 
-O núcleo de agregação, a demonstração pelo terminal e o painel de visitante com dados fictícios já estão implementados. O diagrama representa a arquitetura desejada, não serviços em execução.
+O núcleo de agregação, a demonstração pelo terminal, o painel de visitante com dados fictícios e a camada SQLite independente já estão implementados. O diagrama representa a arquitetura desejada, não serviços em execução.
 
 ```mermaid
 flowchart LR
@@ -22,7 +22,7 @@ flowchart LR
 
 **Backend:** na primeira integração, recebe e valida eventos, agrega o uso e controla o ciclo das sessões de foco pessoal. A base é um backend local por espaço pessoal, com tokens de cliente revogáveis. Autenticação hospedada, códigos de famílias/equipes, participação, acesso temporário e fechamento de relatórios são extensões futuras. Comunicação fora do endereço local exige HTTPS.
 
-**Banco de dados:** SQLite foi escolhido para a primeira integração local, com arquivos fora do repositório. O [modelo de dados](data-model.md) define dispositivos, observações, metas e regras de foco. Contas, vínculos, políticas de responsáveis e relatórios de equipes exigem uma ampliação posterior.
+**Banco de dados:** A [camada SQLite](storage.md) implementa migrações, persistência, consultas por calendário/fuso e manutenção local, com arquivos fora do repositório. O [modelo de dados](data-model.md) define dispositivos, observações, metas e regras de foco. Contas, vínculos, políticas de responsáveis e relatórios de equipes exigem uma ampliação posterior.
 
 **Interface desktop:** painéis por perfil, filtros de dia/semana/mês, controles de foco, limites familiares, análise de solicitações e relatórios de equipes. Os gráficos usam pandas e matplotlib conforme os requisitos. A interface deve se adaptar à tela, oferecer português/inglês e considerar acessibilidade.
 
@@ -64,6 +64,6 @@ Documentação e explicações dos diagramas ficam em português; código, entid
 
 `desktop.py` depende da camada de relatórios, não de APIs de coleta do sistema. `reporting.py` recorta intervalos tipados em faixas de tempo e usa pandas para calcular totais; `charts.py` transforma o relatório em um gráfico matplotlib. O provedor atual gera dados fictícios determinísticos.
 
-O próximo incremento implementará o fluxo API/banco e um adaptador de API nessa fronteira. Ele deve tratar UTC e fusos explicitamente, sem remover essa informação para reutilizar os cálculos da demonstração.
+O próximo incremento conectará a camada SQLite à API e adicionará um adaptador de API nessa fronteira. Ele deve tratar UTC e fusos explicitamente, sem remover essa informação para reutilizar os cálculos da demonstração.
 
 Tkinter fornece a interface inicial do visitante. Essa escolha não fecha a arquitetura futura de contas e backend. Acessibilidade completa e cobertura de plataformas exigem verificações específicas posteriores.

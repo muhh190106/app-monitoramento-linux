@@ -1,6 +1,6 @@
 # Modelo de dados e DER
 
-Estado: modelo lógico v1 para uso pessoal, metas e foco. Banco, migrações e persistência ainda não foram implementados. Este é o mapa de entidades do escopo de integração das cinco frentes, não o modelo completo de famílias/equipes. Consulte o [contrato da API](api.md) para as regras de eventos e relatórios.
+Estado: modelo lógico v1 para uso pessoal, metas e foco. As tabelas, migrações e persistência SQLite estão implementadas; consulte o [guia do banco](storage.md). Os serviços de metas, foco e autenticação ainda não estão implementados. Este é o mapa de entidades do escopo de integração das cinco frentes, não o modelo completo de famílias/equipes. Consulte o [contrato da API](api.md) para as regras de eventos e relatórios.
 
 ## Relacionamentos
 
@@ -64,7 +64,7 @@ As linhas de `focus_session_rules` copiam chave e ação na criação da sessão
 - Revogar dispositivo bloqueia imediatamente o recebimento, preservando histórico até exclusão explícita ou expiração. Verificar revogação de tokens a cada requisição.
 - Lotes de eventos, criação de foco com cópias e gravação de recursos com comprovantes de idempotência devem ser atômicos. Em falha, desfazer toda a transação.
 
-## Índices previstos
+## Índices implementados
 
 Além dos índices de chave primária e unicidade:
 
@@ -95,15 +95,15 @@ O período de uma meta contém o instante atual do servidor no fuso da meta. Cal
 
 ## Migrações, exemplos e exclusão
 
-A frente de banco adicionará migrações ordenadas e tabela `schema_migrations`. Cada migração deve usar transação, preservar dados existentes e ser testada a partir de um esquema anterior. A inicialização não pode substituir um banco existente. SQLite é o adaptador local inicial; um futuro adaptador hospedado deve preservar essas garantias e proteger escritas concorrentes de forma equivalente.
+A camada SQLite inclui migrações ordenadas e tabela `schema_migrations`, com verificação de checksum e aplicação atômica. Cada migração deve usar transação, preservar dados existentes e ser testada a partir de um esquema anterior. A inicialização não pode substituir um banco existente. SQLite é o adaptador local inicial; um futuro adaptador hospedado deve preservar essas garantias e proteger escritas concorrentes de forma equivalente.
 
 Usar o diretório de dados do usuário do sistema, configurável nos testes, nunca o repositório. Os exemplos devem incluir espaço/dispositivo fictícios, uso ativo e inativo, observações do navegador sobrepostas ao desktop, metas e regras/sessões de foco. A carga de exemplos deve ser explícita, determinística e repetível; nunca automática no banco do usuário.
 
 A retenção remove intervalos iniciados antes do corte, inclusive os que o atravessam (perda adicional máxima de 60 segundos), e avança `ingestion_not_before` de cada dispositivo sem retroceder. Rejeitar reenvios anteriores a esse limite, mesmo que o prazo de retenção aumente depois.
 
-A exclusão manual também deve impedir que filas restaurem o histórico. O primeiro incremento integrado deve implementar um comando administrativo local que avance esse corte por dispositivo. Inicializar `devices.ingestion_not_before` no limite de retenção durante o provisionamento. A API rejeita inícios anteriores ao corte. Ainda não há rota HTTP reservada para excluir histórico; administração local e testes de exclusão vêm primeiro.
+A exclusão manual também deve impedir que filas restaurem o histórico. O comando local `delete-history` avança esse corte por dispositivo e exige `--confirm`. Inicializar `devices.ingestion_not_before` no limite de retenção durante o provisionamento. A API rejeita inícios anteriores ao corte. Ainda não há rota HTTP reservada para excluir histórico; administração local e testes de exclusão vêm primeiro.
 
-Excluir dispositivo remove em cascata eventos, tokens, metas, regras e histórico de foco. Excluir foco remove as cópias das regras. Excluir espaço remove dispositivos, tokens do espaço e comprovantes de idempotência. Excluir aplicativo/domínio é proibido enquanto houver referência. Limpar entradas do catálogo sem referências para não deixar metadados de histórico excluído. Revogação é diferente de exclusão; nenhuma dessas operações está implementada atualmente.
+Excluir dispositivo remove em cascata eventos, tokens, metas, regras e histórico de foco. Excluir foco remove as cópias das regras. Excluir espaço remove dispositivos, tokens do espaço e comprovantes de idempotência. Excluir aplicativo/domínio é proibido enquanto houver referência. Limpar entradas do catálogo sem referências para não deixar metadados de histórico excluído. Revogação e exclusão de dispositivos estão disponíveis no repositório Python. A manutenção local remove entradas do catálogo sem referências. Rotas HTTP e administração de espaços ainda não estão implementadas.
 
 ## Limites do escopo
 

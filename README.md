@@ -41,6 +41,10 @@ Instale o pacote Tk da sua distribuição se `tkinter` não estiver disponível.
 
 A demonstração pelo terminal continua disponível com `python -m activity_monitor --demo`, sem as dependências do painel.
 
+## Banco de dados
+
+A camada SQLite já inclui migrações, gravação de eventos, relatórios por dia/semana/mês e manutenção do histórico. Veja o [guia para testar o banco](docs/storage.md). O painel ainda usa dados fictícios em memória; a integração com a API será a próxima etapa.
+
 ## Direção do produto
 
 - **Foco pessoal:** acompanhamento do uso e restrições durante sessões de foco.
